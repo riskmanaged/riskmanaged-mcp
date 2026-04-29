@@ -6,15 +6,30 @@ Build, configure, backtest, and optimize trading strategies from the command lin
 
 ## Installation
 
-```bash
-pip install git+https://github.com/riskmanaged/riskmanaged-mcp.git
-```
-
-Or via curl:
+### One-liner (recommended)
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/riskmanaged/riskmanaged-mcp/main/install.sh | bash
 ```
+
+The install script auto-detects the best available Python package manager on your system and uses it. It checks for (in order): **uv**, **pipx**, **pip/pip3**, **python3 -m pip**, and will bootstrap pip via `ensurepip` as a last resort. Works on macOS, Linux, and WSL.
+
+### Manual install
+
+Pick whichever tool you already have:
+
+```bash
+# uv (fastest)
+uv tool install riskmanaged-mcp@git+https://github.com/riskmanaged/riskmanaged-mcp.git
+
+# pipx (isolated environment)
+pipx install git+https://github.com/riskmanaged/riskmanaged-mcp.git
+
+# pip
+pip install --user git+https://github.com/riskmanaged/riskmanaged-mcp.git
+```
+
+> **Requires Python ≥ 3.11**
 
 ## Setup
 
