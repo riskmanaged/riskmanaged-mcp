@@ -83,3 +83,4 @@ Example conditions:
 - Grid creation costs 10 tokens. Check the user's balance with `get_me` first.
 - Backtests may take 30-60 seconds. Inform the user you're waiting.
 - The `share` parameter in `commit_version` is always false via MCP (social features are human-only).
+- Signal and bias rule conditions are validated at creation time. If a `trigger_line` or `threshold_line` doesn't exist in the strategy, the API returns a `422` error with `error_code: "invalid_condition_line"` and the list of valid `available_lines`. Use this to self-correct line references.
