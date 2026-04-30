@@ -56,7 +56,7 @@ riskmanaged indicators add <STRATEGY_ID> RSI --params '{"length": 14}'
 
 # Signals
 riskmanaged signals add-group <STRATEGY_ID> my_signals
-riskmanaged signals add-rule <STRATEGY_ID> my_signals --action enter_position --direction long --conditions '[{"left":"RSI_btcusdt_30m.rsi","op":"crossover","right":"30"}]'
+riskmanaged signals add-rule <STRATEGY_ID> my_signals --action enter_position --direction long --conditions '[{"trigger_line":"RSI_btcusdt_30m.rsi","trigger":"crossover","threshold_value":30},{"trigger_line":"MACD_btcusdt_30m.macd","trigger":"gt","threshold_line":"MACD_btcusdt_30m.macd_signal"}]'
 
 # Risk management
 riskmanaged risk set-sl <STRATEGY_ID> StopLossTrailing --params '{"trailing_pct": 0.02}'

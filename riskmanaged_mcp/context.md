@@ -32,15 +32,16 @@ Always call `get_indicator_schema` first to discover the available output lines 
 ## Signal Rule Condition Format
 
 Each condition is an object with:
-- `left`: indicator line name or numeric value
-- `op`: operator — `crossover`, `crossunder`, `gt`, `ge`, `lt`, `le`, `eq`
-- `right`: indicator line name or numeric value
+- `trigger_line`: indicator line name or numeric value
+- `trigger`: operator — `crossover`, `crossunder`, `gt`, `ge`, `lt`, `le`, `eq`
+
+- `threshold_line`: indicator line or `threshold_value` (a numeric value)
 
 Example conditions:
 ```json
 [
-  {"left": "RSI_btcusdt_30m.rsi", "op": "crossover", "right": "30"},
-  {"left": "MACD_btcusdt_30m.macd", "op": "gt", "right": "MACD_btcusdt_30m.macd_signal"}
+  {"trigger_line": "RSI_btcusdt_30m.rsi", "trigger": "crossover", "threshold_value": 30},
+  {"trigger_line": "MACD_btcusdt_30m.macd", "trigger": "gt", "threshold_line": "MACD_btcusdt_30m.macd_signal"}
 ]
 ```
 

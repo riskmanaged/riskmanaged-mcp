@@ -162,10 +162,11 @@ If using MCPorter, add to your `mcporter.json`:
 ## Important Notes
 
 - Always call `get_indicator_schema` before `add_indicator` to discover parameters and output line names.
-- Indicator line names follow: `{Type}_{ticker}_{timeframe}.{line}` (e.g., `RSI_btcusdt_30m.rsi`).
+- Default name of an indicator is '{type}_{ticker}_{timeframe}'. For example, if you add an indicator of type 'rsi' with ticker 'btcusdt' and timeframe '30m', the default name will be 'rsi_btcusdt_30m'. You can override this by providing the --name parameter.
+- Indicator line names follow: `{name}.{line}` (e.g., `RSI_btcusdt_30m.rsi`).
 - Line names are **case-sensitive**; tickers are always **lowercase** in line names.
 - Grid creation costs **10 tokens** — check balance with `get_me` first.
-- Backtests take 30-60 seconds.
+- Backtests can take up to 60 seconds depending on the strategy and the ticker and timeframe. Subsequent runs are much faster as the candles are cached after first run.
 
 ---
 
