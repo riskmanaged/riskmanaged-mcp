@@ -17,7 +17,7 @@ def tickers(
     """Search available tickers."""
     client = RiskManagedClient()
     results = client.search_tickers(search=search, exchange=exchange)
-    for t in results[:30]:
+    for t in results:
         if isinstance(t, dict):
             rprint(f"  {t.get('symbol', t.get('name', str(t)))}")
         else:
