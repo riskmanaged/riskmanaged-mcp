@@ -62,7 +62,19 @@ Check your memory/context for a file or memory entry called `strategy_learnings`
 
 **Goal**: Find a concrete, implementable trading strategy idea from the web.
 
-### Step 2.1 — Formulate Search Queries
+### Step 2.1 — Discover Available Indicators
+
+Before formulating search queries, run:
+
+```bash
+riskmanaged indicators list-types
+```
+
+This returns the **full catalog** of indicators the platform supports, grouped by category. Scan the list and note any indicators that are unfamiliar — these may inspire novel strategy ideas you wouldn't otherwise consider. Do NOT limit yourself to well-known indicators like RSI or MACD; the platform may support specialized indicators that are worth exploring.
+
+Save the list for reference — you will cross-check your hypothesis against it in Step 2.5.
+
+### Step 2.2 — Formulate Search Queries
 
 Generate **3 search queries** designed to find actionable indicator-based trading strategies. Use varied angles:
 
@@ -72,7 +84,9 @@ Generate **3 search queries** designed to find actionable indicator-based tradin
 
 If prior learnings exist from Phase 1.3, at least one query **MUST** build upon those findings.
 
-### Step 2.2 — Execute Searches
+**TIP**: Use the indicator list from Step 2.1 to diversify your queries. If you see an indicator you haven't used before, formulate a query around it.
+
+### Step 2.3 — Execute Searches
 
 For each query, run:
 
@@ -80,7 +94,7 @@ For each query, run:
 uv run python ~/.openclaw/skills/web-search-plus/scripts/search.py --provider searxng --query "<query>"
 ```
 
-### Step 2.3 — Read and Extract
+### Step 2.4 — Read and Extract
 
 For each search result set:
 1. Identify the **top 2-3 most relevant** results (pages that describe a specific strategy with indicator names, parameters, and entry/exit rules).
@@ -92,7 +106,7 @@ For each search result set:
    - **Timeframe** recommendation (e.g., "works best on 4h")
    - **Ticker/market** recommendation (e.g., "BTC", "high-cap altcoins")
 
-### Step 2.4 — Formulate Hypothesis
+### Step 2.5 — Formulate Hypothesis
 
 Write a clear hypothesis in this format:
 
@@ -107,17 +121,13 @@ TIMEFRAME: [Primary timeframe]
 TICKER: [Primary ticker]
 ```
 
-### Step 2.5 — Verify Indicators Are Supported
+### Step 2.6 — Verify Indicators Are Supported
 
-Before proceeding, run:
+Cross-check every indicator in your hypothesis against the list you retrieved in Step 2.1.
 
-```bash
-riskmanaged indicators list-types
-```
-
-- For **each indicator** in your hypothesis, confirm it exists in the response.
-- **IF** an indicator is not available → substitute with the closest available alternative.
-- **IF** no suitable substitute exists → return to Step 2.4 and reformulate with available indicators.
+- For **each indicator** in your hypothesis, confirm it exists in the list.
+- **IF** an indicator is not available → substitute with the closest available alternative from the list.
+- **IF** no suitable substitute exists → return to Step 2.5 and reformulate with available indicators.
 
 ### GATE 2
 
@@ -385,7 +395,7 @@ This saves the baseline configuration as version 1.
 
 ## PHASE 5 — Grid Template & Variation Tuning
 
-**Goal**: Create a grid template from the strategy and tune parameter ranges to maximize variations without exceeding the limit.
+**Goal**: Create a grid template from the strategy and tune parameter ranges to run as close to the variation limit as possible. **Exceeding the limit is never acceptable** — the agent must always self-correct.
 
 ### Step 5.1 — Create Grid Template
 
@@ -397,7 +407,7 @@ riskmanaged grids create-template $STRATEGY_ID
 - **IF** response contains `template_id` (or `id`) → **PASS**. Record `$TEMPLATE_ID`.
 - **IF** error → the strategy may not be valid for grid search. Check gate 3 conditions again.
 
-### Step 5.2 — Check Initial Variation Count
+### Step 5.2 — Check Variation Count
 
 Run:
 ```bash
@@ -408,9 +418,9 @@ Record:
 - `$COUNT` = the `count` field (number of variations)
 - `$LIMIT` = the `limit` field (maximum allowed)
 
-### Step 5.3 — Evaluate and Adjust
+### Step 5.3 — Validate and Adjust (Mandatory Loop)
 
-The grid template auto-generates default parameter ranges. You need to **widen ranges to maximize exploration** while staying under `$LIMIT`.
+The grid template auto-generates default parameter ranges. You **must** validate the variation count and adjust until the count is within the acceptable range.
 
 **Target**: Get `$COUNT` as close to `$LIMIT` as possible without exceeding it. Ideal range: `$LIMIT * 0.5` to `$LIMIT`.
 
@@ -419,37 +429,56 @@ The grid template auto-generates default parameter ranges. You need to **widen r
 - Indicator B has `period` range 5-15 step 1 = 11 values
 - Total variations = 11 × 11 = 121
 
-**IF `$COUNT < $LIMIT * 0.5`** (too few variations):
-1. Get the current template by running `riskmanaged grids get-template $TEMPLATE_ID`.
-2. Identify indicator parameters that have narrow ranges (e.g., `range_start=14, range_end=24, range_step=1` = only 10 values).
-3. **Widen ranges**: Expand `range_start` and `range_end` to include more values. For integer parameters like periods, use wider ranges. For example:
-   - RSI period: try `range_start=7, range_end=28, range_step=3` (7 values: 7,10,13,16,19,22,25)
-   - EMA period: try `range_start=10, range_end=50, range_step=5` (8 values: 10,15,20,25,30,35,40,45)
-4. **Add timeframe variations**: Add more timeframes to the `grid` array of the indicator's `timeframe` config (e.g., `["15m", "30m", "1h"]`).
-5. **Add ticker variations**: Add more tickers to test across multiple markets.
-6. Recalculate mentally: multiply all individual parameter value counts together.
-7. Re-check with `riskmanaged grids variations $TEMPLATE_ID`.
+---
 
-**IF `$COUNT > $LIMIT`** (too many variations):
-1. **Narrow ranges**: Reduce the number of values by increasing `range_step` or narrowing `range_start`/`range_end`.
-2. **Remove timeframe/ticker variations**: Reduce the `grid` arrays to fewer items.
-3. Re-check with `riskmanaged grids variations $TEMPLATE_ID`.
+**IF `$COUNT > $LIMIT`** (over the limit — **must fix before proceeding**):
 
-**IF `$LIMIT * 0.5 <= $COUNT <= $LIMIT`** → **PASS**. Proceed to Step 5.4.
+> ⚠ **This is never acceptable.** You cannot proceed to Phase 6 while over the limit. Apply these adjustments in order until `$COUNT <= $LIMIT`:
 
-### Step 5.4 — Variation Tuning Loop
+1. **Increase `range_step`**: Double the step size on the parameter with the most values. This halves that parameter's contribution to the product.
+2. **Narrow ranges**: Reduce `range_start` and/or `range_end` to shrink the number of discrete values per parameter.
+3. **Remove indicator variations**: If the template varies parameters on 3+ indicators, fix the least important indicator's parameters to single values (set `range_start == range_end`).
+4. **Remove timeframe/ticker variations**: Reduce `grid` arrays to a single value.
+5. After each adjustment, re-check: `riskmanaged grids variations $TEMPLATE_ID`.
 
-Repeat the adjustment loop (Step 5.3) until:
-- `$COUNT` is within the ideal range (`$LIMIT * 0.5` to `$LIMIT`), OR
-- You have adjusted 5 times without reaching the range (take the current count if > 10)
+---
 
-**Maximum iterations**: 5 adjustment cycles. After 5 cycles, proceed with whatever count you have as long as `$COUNT > 10` and `$COUNT <= $LIMIT`.
+**IF `$COUNT < $LIMIT * 0.5`** (under-utilizing the limit):
+
+1. Get the current template: `riskmanaged grids get-template $TEMPLATE_ID`.
+2. Identify parameters with narrow ranges or large step sizes.
+3. **Widen ranges**: Expand `range_start` and `range_end`. For integer parameters like periods, use broader exploration windows.
+4. **Reduce step sizes**: If `range_step` is large, reduce it to produce more values (e.g., step 5 → step 2).
+5. **Add timeframe variations**: Add timeframes to the `grid` array (e.g., `["15m", "30m", "1h"]`).
+6. **Add ticker variations**: Test across multiple markets.
+7. Recalculate mentally: multiply all individual parameter value counts together. **Ensure the estimate stays ≤ `$LIMIT` before applying.**
+8. Re-check: `riskmanaged grids variations $TEMPLATE_ID`.
+
+> ⚠ When widening, always verify **before applying** that your estimated count won't exceed `$LIMIT`. If widening would push you over, widen less aggressively.
+
+---
+
+**IF `$LIMIT * 0.5 <= $COUNT <= $LIMIT`** → **PASS**. The count is in the ideal range.
+
+### Step 5.4 — Tuning Loop
+
+Repeat Step 5.3 until one of these conditions is met:
+- `$COUNT` is in the ideal range (`$LIMIT * 0.5` to `$LIMIT`) → **PASS**
+- You have completed **5 adjustment cycles** → proceed with the current count as long as `$COUNT <= $LIMIT`
+
+**Maximum iterations**: 5 adjustment cycles.
+
+**HARD RULE**: If after 5 cycles `$COUNT` is still **above** `$LIMIT`, apply the **emergency fallback**:
+1. Set ALL indicator parameters to single values (`range_start == range_end`)
+2. Pick the **2 most impactful parameters** and restore only those to small ranges
+3. Re-check variations — this is guaranteed to bring `$COUNT` under `$LIMIT`
+4. You **must not** proceed to Phase 6 until `$COUNT <= $LIMIT`
 
 ### GATE 5
 
-- `$COUNT > 10` AND `$COUNT <= $LIMIT` → **PASS**. Proceed to Phase 6.
+- `$COUNT <= $LIMIT` → **PASS**. Proceed to Phase 6.
 - `$COUNT <= 10` → the strategy doesn't have enough tunable parameters. Proceed to Phase 6 anyway (a small grid is still useful).
-- `$COUNT > $LIMIT` after 5 adjustment cycles → narrow ranges more aggressively. If still over, **reduce to the simplest version**: set all parameters to single values except the 2 most important ones.
+- `$COUNT > $LIMIT` → **DO NOT PROCEED**. Return to Step 5.3 and apply the emergency fallback. This gate cannot be passed while over the limit.
 
 ---
 
@@ -635,22 +664,21 @@ Learnings saved to memory.
 | Backtest returns no trades | Entry conditions too restrictive | Loosen signal conditions (use `gt`/`lt` instead of `crossover`, lower thresholds) |
 | Backtest takes too long | Large timeframe + long history | Use a shorter timeframe for initial testing |
 
-## Indicator Line Quick Reference
+## Discovering Indicators and Line Names
 
-| Indicator | Common Lines |
-|-----------|-------------|
-| RSI | `.rsi` |
-| MACD | `.macd`, `.macd_signal`, `.macd_hist` |
-| BollingerBands | `.upper`, `.middle`, `.lower` |
-| EMA | `.ema` |
-| SMA | `.sma` |
-| ADX | `.adx`, `.plus_di`, `.minus_di` |
-| Supertrend | `.supertrend`, `.direction` |
-| Stochastic | `.stoch_k`, `.stoch_d` |
-| ATR | `.atr` |
-| StochasticRSI | `.stochrsi_k`, `.stochrsi_d` |
+Do **not** rely on a hardcoded list of indicators. The platform's indicator catalog evolves and may include specialized indicators not covered by any static reference.
 
-**Always run `riskmanaged indicators schema <type>` to confirm exact line names** — this table is for quick reference only.
+**To discover all available indicators:**
+```bash
+riskmanaged indicators list-types
+```
+
+**To get the exact parameters and output line names for a specific indicator:**
+```bash
+riskmanaged indicators schema <IndicatorType>
+```
+
+The `schema` command returns the `lines` array — these are the **exact** output line names you must use in signal and bias rule conditions. Always run `schema` before adding an indicator or writing conditions.
 
 > **Remember**: The full line reference is `{indicator_name}.{line}`. If you used the default name, `indicator_name` = `{type_lowercase}_{ticker}_{timeframe}` (e.g., `rsi_btcusdt_30m.rsi`). If you set a custom name, use that instead (e.g., `fast_rsi.rsi`).
 
@@ -695,3 +723,86 @@ Learnings saved to memory.
   }
 }
 ```
+
+---
+
+## Scheduling as a Cron
+
+This workflow is designed to run autonomously on a schedule. Below are setup instructions for the two supported agent runtimes.
+
+### OpenClaw
+
+OpenClaw supports cron-style scheduled tasks via files in `~/.openclaw/crons/`.
+
+**1. Create the cron file:**
+
+```bash
+mkdir -p ~/.openclaw/crons
+cp /path/to/cron.md ~/.openclaw/crons/strategy_research.md
+```
+
+**2. Add a schedule header** to the top of the copied file:
+
+```markdown
+---
+schedule: "0 6 * * *"   # Runs daily at 06:00 UTC
+skills:
+  - riskmanaged-mcp
+  - web-search-plus
+---
+```
+
+**3. Ensure required environment variables are set** in OpenClaw's skill configuration:
+
+| Variable | Where to Set | Value |
+|----------|-------------|-------|
+| `RISKMANAGED_TOKEN` | OpenClaw Settings → Skills → Environment Variables | Your API token from [riskmanaged.io/profile](https://riskmanaged.io/profile) |
+| `RISKMANAGED_URL` | OpenClaw Settings → Skills → Environment Variables | `https://riskmanaged.io` |
+
+**4. Verify the cron is registered:**
+
+Ask OpenClaw: `"What crons do I have scheduled?"` — it should list `strategy_research.md`.
+
+The agent will execute this workflow end-to-end on each scheduled run, saving learnings to memory so subsequent runs build on prior findings.
+
+### Hermes
+
+Hermes supports scheduled tasks via the `crons` key in `~/.hermes/config.yaml`.
+
+**1. Add the cron entry to your Hermes config:**
+
+```yaml
+crons:
+  strategy_research:
+    schedule: "0 6 * * *"   # Daily at 06:00 UTC
+    prompt_file: /path/to/cron.md
+    skills:
+      - riskmanaged-mcp
+      - web-search-plus
+    env:
+      RISKMANAGED_TOKEN: "YOUR_TOKEN"
+      RISKMANAGED_URL: "https://riskmanaged.io"
+```
+
+**2. Reload Hermes** to pick up the new cron:
+
+```
+/reload-config
+```
+
+**3. Verify** by asking: `"What scheduled tasks are running?"`
+
+### Recommended Schedules
+
+| Schedule | Cron Expression | Use Case |
+|----------|----------------|----------|
+| Daily (recommended) | `0 6 * * *` | Steady research cadence, one strategy per day |
+| Twice daily | `0 6,18 * * *` | More aggressive exploration |
+| Weekly | `0 6 * * 1` | Conservative, one deep research per week |
+
+### Notes
+
+- Each run costs **10 tokens** for the grid search. Ensure your account has sufficient balance or a daily free run available.
+- The workflow is self-contained — it handles authentication, research, building, optimization, and learning compilation in a single execution.
+- Learnings persist across runs via the agent's memory system, so each run becomes progressively more informed.
+- If a run fails (e.g., insufficient tokens), it will abort gracefully with a clear message. The next scheduled run will attempt fresh research.
