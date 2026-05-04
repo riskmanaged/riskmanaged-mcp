@@ -263,8 +263,9 @@ OR for comparing two indicator lines:
 Run:
 
 ```bash
-riskmanaged signals add-rule $STRATEGY_ID main_signals --action enter_position --direction long --conditions '<your conditions JSON array>'
+riskmanaged signals add-rule $STRATEGY_ID main_signals --action enter_position --direction <long/short> --conditions '<your conditions JSON array>'
 ```
+**note** the bittensor exchange does not support short positions, so you should only use long positions for bittensor exchanges.
 
 - **IF** success → continue
 - **IF** error mentioning "invalid_condition_line" → the API validates lines at rule creation time. Read the `available_lines` array from the error response body to see exactly which lines exist on this strategy. Fix your line references to match and retry.
@@ -277,7 +278,7 @@ Construct exit conditions following the same format as Step 3.6.
 Run:
 
 ```bash
-riskmanaged signals add-rule $STRATEGY_ID main_signals --action exit_position --direction long --conditions '<your exit conditions JSON array>'
+riskmanaged signals add-rule $STRATEGY_ID main_signals --action exit_position --direction <long/short> --conditions '<your exit conditions JSON array>'
 ```
 
 - **IF** success → continue
