@@ -1,0 +1,100 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # The suite is fully offline: HTTP is faked with respx in `assert_all_mocked`
+  # mode, and the API contract is checked against the vendored snapshot in
+  # tests/snapshots/. No backend, no database, no credentials.
+  #
+  # That is deliberate rather than incidental. The client's default base URL is
+  # production, so a test that reached the network would reach *production* —
+  # and would need a real token to do anything, which CI must never hold.
+  # ---------------------------------------------------------------------------
+  pytest:
+    name: pytest (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+
+      - name: Run tests
+        run: pytest -v
+        env:
+          # Belt and braces: the autouse fixture sets these too, but pinning
+          # them here means even a fixture regression cannot fall back to a
+          # runner's ambient config or to the production default URL.
+          RISKMANAGED_TOKEN: ci-token-not-a-real-credential
+          RISKMANAGED_URL: https://mcp-tests.invalid
+
+  # ---------------------------------------------------------------------------
+  # A broken import is invisible to a suite that never imports the module —
+  # which is exactly how oauth.py shipped with a SyntaxError. Import every
+  # module explicitly, and render the CLI, which is what surfaces malformed
+  # Typer signatures.
+  # ---------------------------------------------------------------------------
+  import-smoke:
+    name: Import smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Import every module
+        run: |
+          python - <<'PY'
+          import importlib, pkgutil
+          import riskmanaged_mcp
+
+          failed = []
+          for module in pkgutil.walk_packages(
+              riskmanaged_mcp.__path__, "riskmanaged_mcp."
+          ):
+              try:
+                  importlib.import_module(module.name)
+              except Exception as exc:
+                  failed.append(f"{module.name}: {exc!r}")
+          if failed:
+              raise SystemExit("failed to import:\n  " + "\n  ".join(failed))
+          print("OK: every module imports")
+          PY
+
+      - name: Render the CLI
+        run: riskmanaged --help

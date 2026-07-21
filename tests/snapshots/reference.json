@@ -1,0 +1,2075 @@
+{
+  "constants": {
+    "bias_directions": [
+      "long",
+      "short",
+      "neutral"
+    ],
+    "exchanges": [
+      "binance"
+    ],
+    "modes": [
+      "paper",
+      "live"
+    ],
+    "timeframes": [
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "4h",
+      "1d"
+    ],
+    "trigger_actions": [
+      "enter_position",
+      "exit_position"
+    ],
+    "trigger_directions": [
+      "long",
+      "short"
+    ],
+    "trigger_types": [
+      {
+        "label": "goes above",
+        "value": "crossover"
+      },
+      {
+        "label": "goes below",
+        "value": "crossunder"
+      },
+      {
+        "label": "is greater than",
+        "value": "gt"
+      },
+      {
+        "label": "is greater or equal to",
+        "value": "ge"
+      },
+      {
+        "label": "is less than",
+        "value": "lt"
+      },
+      {
+        "label": "is less or equal to",
+        "value": "le"
+      },
+      {
+        "label": "equals",
+        "value": "eq"
+      }
+    ]
+  },
+  "indicators": {
+    "AD": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "AD",
+      "lines": [
+        "ad"
+      ]
+    },
+    "ADOSC": {
+      "config_fields": [
+        "exchange",
+        "fast",
+        "name",
+        "slow",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "ADOSC",
+      "lines": [
+        "adosc",
+        "zero"
+      ]
+    },
+    "ADX": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "no_trend",
+        "ticker",
+        "timeframe",
+        "trend"
+      ],
+      "default_name": "ADX",
+      "lines": [
+        "adx",
+        "adx_no_trend",
+        "adx_trend"
+      ]
+    },
+    "ALMA": {
+      "config_fields": [
+        "distribution_offset",
+        "exchange",
+        "length",
+        "name",
+        "sigma",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "ALMA",
+      "lines": [
+        "alma"
+      ]
+    },
+    "APO": {
+      "config_fields": [
+        "exchange",
+        "fast",
+        "name",
+        "slow",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "APO",
+      "lines": [
+        "apo",
+        "zero"
+      ]
+    },
+    "ATR": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "sma_length",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "ATR",
+      "lines": [
+        "atr",
+        "atr_sma",
+        "previous_atr"
+      ]
+    },
+    "Aberration": {
+      "config_fields": [
+        "atr_length",
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Aberration",
+      "lines": [
+        "aber_atr",
+        "aber_sg",
+        "aber_xg",
+        "aber_zg"
+      ]
+    },
+    "AcceleratorBands": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "AcceleratorBands",
+      "lines": [
+        "acc",
+        "acc_lower",
+        "acc_upper"
+      ]
+    },
+    "Aroon": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Aroon",
+      "lines": [
+        "aroon_down",
+        "aroon_osc",
+        "aroon_up"
+      ]
+    },
+    "AwesomeOscillator": {
+      "config_fields": [
+        "exchange",
+        "fast",
+        "name",
+        "slow",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "AwesomeOscillator",
+      "lines": [
+        "ao"
+      ]
+    },
+    "BOP": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "BOP",
+      "lines": [
+        "bop",
+        "zero"
+      ]
+    },
+    "BRAR": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "BRAR",
+      "lines": [
+        "ar",
+        "br"
+      ]
+    },
+    "Bias": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Bias",
+      "lines": [
+        "bias",
+        "zero"
+      ]
+    },
+    "BolingerBands": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "std_dev",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "BolingerBands",
+      "lines": [
+        "bband_low",
+        "bband_mid",
+        "bband_top"
+      ]
+    },
+    "BollingerBands": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "ma_type",
+        "name",
+        "source",
+        "std_dev",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "BollingerBands",
+      "lines": [
+        "bband_low",
+        "bband_mid",
+        "bband_top"
+      ]
+    },
+    "CCI": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ob",
+        "os",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "CCI",
+      "lines": [
+        "cci",
+        "cci_ob",
+        "cci_os"
+      ]
+    },
+    "CFO": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "CFO",
+      "lines": [
+        "cfo",
+        "zero"
+      ]
+    },
+    "CG": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "CG",
+      "lines": [
+        "cg"
+      ]
+    },
+    "CMF": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "CMF",
+      "lines": [
+        "cmf",
+        "zero"
+      ]
+    },
+    "CMO": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "neutral",
+        "ob",
+        "os",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "CMO",
+      "lines": [
+        "cmo",
+        "cmo_neutral",
+        "cmo_ob",
+        "cmo_os"
+      ]
+    },
+    "CTI": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "CTI",
+      "lines": [
+        "cti"
+      ]
+    },
+    "CandlePattern": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "CandlePattern",
+      "lines": []
+    },
+    "CandlePatternScanner": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "pattern_name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "CandlePatternScanner",
+      "lines": [
+        "pattern"
+      ]
+    },
+    "ChandKrollStop": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "p",
+        "q",
+        "ticker",
+        "timeframe",
+        "x"
+      ],
+      "default_name": "ChandKrollStop",
+      "lines": [
+        "cksp_stop_long",
+        "cksp_stop_short"
+      ]
+    },
+    "ChopIndex": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "sma_length",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "ChopIndex",
+      "lines": [
+        "chop_index",
+        "chop_sma"
+      ]
+    },
+    "ClosePrice": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "close_price",
+      "lines": [
+        "close"
+      ]
+    },
+    "Coppock": {
+      "config_fields": [
+        "exchange",
+        "fast",
+        "length",
+        "name",
+        "slow",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Coppock",
+      "lines": [
+        "coppock",
+        "zero"
+      ]
+    },
+    "DEMA": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "DEMA",
+      "lines": [
+        "dema"
+      ]
+    },
+    "DM": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "DM",
+      "lines": [
+        "dm_neg",
+        "dm_pos"
+      ]
+    },
+    "DPO": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "DPO",
+      "lines": [
+        "dpo",
+        "zero"
+      ]
+    },
+    "DailyRange": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "ticker",
+        "timeframe",
+        "window_timeframe"
+      ],
+      "default_name": "Daily Range",
+      "lines": [
+        "mid",
+        "r1",
+        "r2",
+        "range",
+        "s1",
+        "s2"
+      ]
+    },
+    "DonchianChannel": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "DonchianChannel",
+      "lines": [
+        "doch_mid",
+        "donch_lower",
+        "donch_upper"
+      ]
+    },
+    "EBSW": {
+      "config_fields": [
+        "bars",
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "EBSW",
+      "lines": [
+        "ebsw",
+        "zero"
+      ]
+    },
+    "EFI": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "EFI",
+      "lines": [
+        "efi",
+        "zero"
+      ]
+    },
+    "EMA": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "EMA",
+      "lines": [
+        "ema"
+      ]
+    },
+    "EOM": {
+      "config_fields": [
+        "divisor",
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "EOM",
+      "lines": [
+        "eom",
+        "zero"
+      ]
+    },
+    "ER": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "ER",
+      "lines": [
+        "er"
+      ]
+    },
+    "ERI": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "ERI",
+      "lines": [
+        "bear",
+        "bull"
+      ]
+    },
+    "Entropy": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Entropy",
+      "lines": [
+        "entropy"
+      ]
+    },
+    "FWMA": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "FWMA",
+      "lines": [
+        "fwma"
+      ]
+    },
+    "FibonacciPivotPoints": {
+      "config_fields": [
+        "exchange",
+        "levels",
+        "lookback",
+        "name",
+        "ticker",
+        "timeframe",
+        "window_timeframe"
+      ],
+      "default_name": "FibonacciPivotPoints",
+      "lines": [
+        "R1",
+        "R2",
+        "S1",
+        "S2",
+        "pivot"
+      ]
+    },
+    "FisherTransform": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "signal",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "FisherTransform",
+      "lines": [
+        "fisher",
+        "fisher_signal"
+      ]
+    },
+    "HMA": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "HMA",
+      "lines": [
+        "hma"
+      ]
+    },
+    "HWC": {
+      "config_fields": [
+        "exchange",
+        "na",
+        "name",
+        "nb",
+        "nc",
+        "nd",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "HWC",
+      "lines": [
+        "hwc_lower",
+        "hwc_mid",
+        "hwc_upper"
+      ]
+    },
+    "HWMA": {
+      "config_fields": [
+        "exchange",
+        "na",
+        "name",
+        "nb",
+        "nc",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "HWMA",
+      "lines": [
+        "hwma"
+      ]
+    },
+    "HeikinAshi": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "HeikinAshi",
+      "lines": [
+        "ha_close",
+        "ha_high",
+        "ha_low",
+        "ha_open"
+      ]
+    },
+    "HiLo": {
+      "config_fields": [
+        "exchange",
+        "high_length",
+        "low_length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "HiLo",
+      "lines": [
+        "hilo_hi",
+        "hilo_lo"
+      ]
+    },
+    "HighestHighLowestLow": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "HighsAndLows",
+      "lines": [
+        "highest_high",
+        "lowest_low"
+      ]
+    },
+    "IchimokuCloud": {
+      "config_fields": [
+        "exchange",
+        "kijun",
+        "name",
+        "senkou",
+        "tenkan",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "IchimokuCloud",
+      "lines": [
+        "ichi_a",
+        "ichi_b"
+      ]
+    },
+    "Inertia": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "rvi_length",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Inertia",
+      "lines": [
+        "inertia"
+      ]
+    },
+    "JMA": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "phase",
+        "power",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "JMA",
+      "lines": [
+        "jma"
+      ]
+    },
+    "KAMA": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "KAMA",
+      "lines": [
+        "kama"
+      ]
+    },
+    "KDJ": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "signal",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "KDJ",
+      "lines": [
+        "d",
+        "j",
+        "k"
+      ]
+    },
+    "KST": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "roc1",
+        "roc2",
+        "roc3",
+        "roc4",
+        "signal",
+        "sma1",
+        "sma2",
+        "sma3",
+        "sma4",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "KST",
+      "lines": [
+        "kst",
+        "kst_signal"
+      ]
+    },
+    "KVO": {
+      "config_fields": [
+        "exchange",
+        "fast",
+        "name",
+        "signal",
+        "slow",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "KVO",
+      "lines": [
+        "kvo",
+        "kvo_signal"
+      ]
+    },
+    "KeltnerChannel": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "scalar",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "KeltnerChannel",
+      "lines": [
+        "kc_lower",
+        "kc_mid",
+        "kc_upper"
+      ]
+    },
+    "Kurtosis": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Kurtosis",
+      "lines": [
+        "kurtosis"
+      ]
+    },
+    "Levels": {
+      "config_fields": [
+        "exchange",
+        "levels",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Levels",
+      "lines": []
+    },
+    "LinearRegression": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "LinearRegression",
+      "lines": [
+        "linreg"
+      ]
+    },
+    "MACD": {
+      "config_fields": [
+        "exchange",
+        "fast_length",
+        "name",
+        "signal_length",
+        "slow_length",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "MACD",
+      "lines": [
+        "histogram",
+        "macd",
+        "signal",
+        "zero"
+      ]
+    },
+    "MAD": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "MAD",
+      "lines": [
+        "mad"
+      ]
+    },
+    "MFI": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ob",
+        "os",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "MFI",
+      "lines": [
+        "mfi",
+        "mfi_ob",
+        "mfi_os"
+      ]
+    },
+    "ManipulationRange": {
+      "config_fields": [
+        "atr_length",
+        "exchange",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Manipulation",
+      "lines": [
+        "atr",
+        "lower",
+        "upper"
+      ]
+    },
+    "MassIndex": {
+      "config_fields": [
+        "exchange",
+        "fast",
+        "name",
+        "slow",
+        "ticker",
+        "timeframe",
+        "trigger"
+      ],
+      "default_name": "MassIndex",
+      "lines": [
+        "massi",
+        "massi_trigger"
+      ]
+    },
+    "McGinleyDynamic": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "McGinleyDynamic",
+      "lines": [
+        "mcgd"
+      ]
+    },
+    "Median": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Median",
+      "lines": [
+        "median"
+      ]
+    },
+    "MidPoint": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "MidPoint",
+      "lines": [
+        "midpoint"
+      ]
+    },
+    "MidPrice": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "MidPrice",
+      "lines": [
+        "midprice"
+      ]
+    },
+    "Momentum": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "neutral_line",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Momentum",
+      "lines": [
+        "momentum",
+        "neutral",
+        "previous_momentum"
+      ]
+    },
+    "NATR": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "NATR",
+      "lines": [
+        "natr",
+        "prev_natr"
+      ]
+    },
+    "NVI": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "NVI",
+      "lines": [
+        "nvi",
+        "nvi_signal"
+      ]
+    },
+    "NewsSentiment": {
+      "config_fields": [
+        "confidence_floor",
+        "exchange",
+        "length",
+        "min_articles",
+        "name",
+        "ticker",
+        "timeframe",
+        "urgency_weight"
+      ],
+      "default_name": "NewsSentiment",
+      "lines": [
+        "article_count",
+        "bearish_count",
+        "bullish_count",
+        "dominant_news_type",
+        "high_urgency_count",
+        "sentiment_score"
+      ]
+    },
+    "OBV": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "sma_length",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "On Balance Volume",
+      "lines": [
+        "obv",
+        "obv_sma",
+        "previous_obv"
+      ]
+    },
+    "PGO": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "PGO",
+      "lines": [
+        "pgo"
+      ]
+    },
+    "PPO": {
+      "config_fields": [
+        "exchange",
+        "fast",
+        "name",
+        "signal",
+        "slow",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "PPO",
+      "lines": [
+        "ppo",
+        "ppo_histogram",
+        "ppo_signal"
+      ]
+    },
+    "PSAR": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Parabolic Sar",
+      "lines": [
+        "previous_psar",
+        "psar"
+      ]
+    },
+    "PSL": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "PSL",
+      "lines": [
+        "psl"
+      ]
+    },
+    "PVI": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "PVI",
+      "lines": [
+        "pvi",
+        "pvi_signal"
+      ]
+    },
+    "PVT": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "PVT",
+      "lines": [
+        "pvt"
+      ]
+    },
+    "PWMA": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "PWMA",
+      "lines": [
+        "pwma"
+      ]
+    },
+    "PercentChange": {
+      "config_fields": [
+        "exchange",
+        "lookback",
+        "name",
+        "pct_lower",
+        "pct_lower_l1",
+        "pct_lower_l2",
+        "pct_upper",
+        "pct_upper_l1",
+        "pct_upper_l2",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "PercentChange",
+      "lines": [
+        "pct_change",
+        "pct_change_lower",
+        "pct_change_lower_l1",
+        "pct_change_lower_l2",
+        "pct_change_upper",
+        "pct_change_upper_l1",
+        "pct_change_upper_l2"
+      ]
+    },
+    "PercentChangeLevels": {
+      "config_fields": [
+        "exchange",
+        "levels",
+        "lookback",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "PercentChangeLevels",
+      "lines": [
+        "pct_change"
+      ]
+    },
+    "PercentageVolumeOsc": {
+      "config_fields": [
+        "exchange",
+        "fast",
+        "name",
+        "signal",
+        "slow",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "PercentageVolumeOsc",
+      "lines": [
+        "previous_pvo",
+        "pvo",
+        "pvo_signal",
+        "pvo_slow"
+      ]
+    },
+    "PivotPoints": {
+      "config_fields": [
+        "exchange",
+        "left_confirm",
+        "name",
+        "right_confirm",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "PivotPoints",
+      "lines": [
+        "pivot",
+        "pivot_high",
+        "pivot_low"
+      ]
+    },
+    "Price": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "price",
+      "lines": [
+        "close",
+        "high",
+        "low",
+        "open"
+      ]
+    },
+    "QQE": {
+      "config_fields": [
+        "exchange",
+        "factor",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "QQE",
+      "lines": [
+        "qqe",
+        "qqe_long",
+        "qqe_short"
+      ]
+    },
+    "QStick": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "QStick",
+      "lines": [
+        "qstick",
+        "zero"
+      ]
+    },
+    "Quantile": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "q",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Quantile",
+      "lines": [
+        "quantile"
+      ]
+    },
+    "RMA": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "RMA",
+      "lines": [
+        "rma"
+      ]
+    },
+    "ROC": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "ROC",
+      "lines": [
+        "roc",
+        "zero"
+      ]
+    },
+    "RSI": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ob",
+        "os",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "RSI",
+      "lines": [
+        "rsi",
+        "rsi_ob",
+        "rsi_os"
+      ]
+    },
+    "RSX": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ob",
+        "os",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "RSX",
+      "lines": [
+        "rsx",
+        "rsx_ob",
+        "rsx_os"
+      ]
+    },
+    "RVGI": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "signal",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "RVGI",
+      "lines": [
+        "rvgi",
+        "rvgi_signal"
+      ]
+    },
+    "RVI": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "signal",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "RVI",
+      "lines": [
+        "rvi",
+        "rvi_signal"
+      ]
+    },
+    "Resistance": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "resistance_price",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "resistance",
+      "lines": [
+        "resistance"
+      ]
+    },
+    "SINWMA": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "SINWMA",
+      "lines": [
+        "sinwma"
+      ]
+    },
+    "SMA": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "SMA",
+      "lines": [
+        "sma"
+      ]
+    },
+    "SMI": {
+      "config_fields": [
+        "exchange",
+        "fast",
+        "name",
+        "signal",
+        "slow",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "SMI",
+      "lines": [
+        "smi",
+        "smi_osc",
+        "smi_signal"
+      ]
+    },
+    "SSF": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "poles",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "SSF",
+      "lines": [
+        "ssf"
+      ]
+    },
+    "STC": {
+      "config_fields": [
+        "exchange",
+        "fast",
+        "length",
+        "name",
+        "slow",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "STC",
+      "lines": [
+        "stc",
+        "stc_macd",
+        "stc_stoch"
+      ]
+    },
+    "SWMA": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "SWMA",
+      "lines": [
+        "swma"
+      ]
+    },
+    "Skew": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Skew",
+      "lines": [
+        "skew"
+      ]
+    },
+    "Slope": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Slope",
+      "lines": [
+        "slope"
+      ]
+    },
+    "Squeeze": {
+      "config_fields": [
+        "bb_length",
+        "bb_std",
+        "exchange",
+        "kc_length",
+        "kc_scalar",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Squeeze",
+      "lines": [
+        "sqz_off",
+        "sqz_on",
+        "sqz_value",
+        "zero"
+      ]
+    },
+    "SqueezePro": {
+      "config_fields": [
+        "bb_length",
+        "bb_std",
+        "exchange",
+        "kc_length",
+        "kc_scalar_narrow",
+        "kc_scalar_normal",
+        "kc_scalar_wide",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "SqueezePro",
+      "lines": [
+        "sqz_no",
+        "sqz_off",
+        "sqz_on",
+        "sqz_value",
+        "zero"
+      ]
+    },
+    "StdDev": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "StdDev",
+      "lines": [
+        "stdev"
+      ]
+    },
+    "StochRSI": {
+      "config_fields": [
+        "d",
+        "exchange",
+        "k",
+        "length",
+        "name",
+        "ob",
+        "os",
+        "rsi_length",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "StochRSI",
+      "lines": [
+        "stochrsi_d",
+        "stochrsi_k",
+        "stochrsi_ob",
+        "stochrsi_os"
+      ]
+    },
+    "Stochastic": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "length_d",
+        "length_k",
+        "midline",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Stochastic",
+      "lines": [
+        "stoch_d",
+        "stoch_k",
+        "stoch_midline"
+      ]
+    },
+    "Supertrend": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "multiplier",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Supertrend",
+      "lines": [
+        "previous_supertrend",
+        "supertrend"
+      ]
+    },
+    "Support": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "support_price",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "support",
+      "lines": [
+        "support"
+      ]
+    },
+    "T3": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe",
+        "vfactor"
+      ],
+      "default_name": "T3",
+      "lines": [
+        "t3"
+      ]
+    },
+    "TDSequential": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "TDSequential",
+      "lines": [
+        "td_seq_down",
+        "td_seq_up"
+      ]
+    },
+    "TEMA": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "TEMA",
+      "lines": [
+        "tema"
+      ]
+    },
+    "TRIMA": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "TRIMA",
+      "lines": [
+        "trima"
+      ]
+    },
+    "TRIX": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "signal",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "TRIX",
+      "lines": [
+        "trix",
+        "trix_signal",
+        "zero"
+      ]
+    },
+    "TSI": {
+      "config_fields": [
+        "exchange",
+        "fast",
+        "name",
+        "signal",
+        "slow",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "TSI",
+      "lines": [
+        "tsi",
+        "tsi_signal",
+        "zero"
+      ]
+    },
+    "TTMTrend": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "TTMTrend",
+      "lines": [
+        "ttm_trend"
+      ]
+    },
+    "TrueRange": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "TrueRange",
+      "lines": [
+        "true_range"
+      ]
+    },
+    "UlcerIndex": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "UlcerIndex",
+      "lines": [
+        "ui"
+      ]
+    },
+    "UltimateOscillator": {
+      "config_fields": [
+        "exchange",
+        "fast",
+        "medium",
+        "name",
+        "ob",
+        "os",
+        "slow",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "UltimateOscillator",
+      "lines": [
+        "uo",
+        "uo_ob",
+        "uo_os"
+      ]
+    },
+    "VHF": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "VHF",
+      "lines": [
+        "vhf"
+      ]
+    },
+    "VIDYA": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "VIDYA",
+      "lines": [
+        "vidya"
+      ]
+    },
+    "VWAP": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "VWAP",
+      "lines": [
+        "vwap"
+      ]
+    },
+    "VWMA": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "VWMA",
+      "lines": [
+        "vwma"
+      ]
+    },
+    "Variance": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Variance",
+      "lines": [
+        "variance"
+      ]
+    },
+    "VolumePercentChangeLevels": {
+      "config_fields": [
+        "exchange",
+        "levels",
+        "lookback",
+        "name",
+        "sma_length",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "VolumePercentChangeLevels",
+      "lines": [
+        "pct_change",
+        "vol_sma"
+      ]
+    },
+    "VolumeProfile": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "price_precision",
+        "ticker",
+        "timeframe",
+        "vol_threshold_b"
+      ],
+      "default_name": "VolumeProfile",
+      "lines": [
+        "poc",
+        "vol_threshold",
+        "vp_volume"
+      ]
+    },
+    "Vortex": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "Vortex",
+      "lines": [
+        "vi_neg",
+        "vi_pos"
+      ]
+    },
+    "WMA": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "WMA",
+      "lines": [
+        "wma"
+      ]
+    },
+    "WeightedClosePrice": {
+      "config_fields": [
+        "exchange",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "WeightedClosePrice",
+      "lines": [
+        "wcp"
+      ]
+    },
+    "WillR": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ob",
+        "os",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "WillR",
+      "lines": [
+        "will_ob",
+        "will_os",
+        "will_r"
+      ]
+    },
+    "ZLMA": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "ZLMA",
+      "lines": [
+        "zlma"
+      ]
+    },
+    "ZScore": {
+      "config_fields": [
+        "exchange",
+        "length",
+        "name",
+        "ticker",
+        "timeframe"
+      ],
+      "default_name": "ZScore",
+      "lines": [
+        "zero",
+        "zscore"
+      ]
+    }
+  },
+  "risk": {
+    "StopLossAtr": {
+      "config_fields": [
+        "atr_line",
+        "atr_multiplier",
+        "sl_type"
+      ],
+      "kind": "stoploss"
+    },
+    "StopLossSimple": {
+      "config_fields": [
+        "sl_type",
+        "stoploss_pct"
+      ],
+      "kind": "stoploss"
+    },
+    "StopLossTrailing": {
+      "config_fields": [
+        "sl_type",
+        "trailing_pct"
+      ],
+      "kind": "stoploss"
+    },
+    "TakeProfitAtr": {
+      "config_fields": [
+        "atr_line",
+        "atr_multiplier",
+        "tp_type"
+      ],
+      "kind": "takeprofit"
+    },
+    "TakeProfitSpread": {
+      "config_fields": [
+        "order_spread",
+        "tp_type"
+      ],
+      "kind": "takeprofit"
+    }
+  }
+}

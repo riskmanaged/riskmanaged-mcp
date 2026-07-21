@@ -1,0 +1,5178 @@
+{
+  "components": {
+    "schemas": {
+      "AlertStrategyInput": {
+        "properties": {
+          "alert_filters": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Alert Filters",
+            "type": "object"
+          },
+          "alert_generators": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Alert Generators",
+            "type": "object"
+          },
+          "bias_generators": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Bias Generators",
+            "type": "object"
+          },
+          "created_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By"
+          },
+          "enabled": {
+            "default": false,
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "enabled_for_trading": {
+            "default": false,
+            "title": "Enabled For Trading",
+            "type": "boolean"
+          },
+          "exchange_credential_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchange Credential Id"
+          },
+          "grid_id": {
+            "title": "Grid Id",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "indicators": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Indicators",
+            "type": "object"
+          },
+          "leverage": {
+            "default": 1,
+            "title": "Leverage",
+            "type": "integer"
+          },
+          "mode": {
+            "default": "paper",
+            "title": "Mode",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "public": {
+            "default": false,
+            "title": "Public",
+            "type": "boolean"
+          },
+          "risk_management": {
+            "$ref": "#/components/schemas/RiskManagement",
+            "default": {
+              "stop_loss": {
+                "sl_type": "trailing",
+                "trailing_pct": 0.005
+              },
+              "take_profit": {
+                "order_spread": [
+                  {
+                    "profit_target": 0.05
+                  },
+                  {
+                    "profit_target": 0.1
+                  }
+                ],
+                "tp_type": "spread"
+              }
+            }
+          },
+          "root_exchange": {
+            "title": "Root Exchange",
+            "type": "string"
+          },
+          "root_ticker": {
+            "title": "Root Ticker",
+            "type": "string"
+          },
+          "root_timeframe": {
+            "title": "Root Timeframe",
+            "type": "string"
+          },
+          "strategy_type": {
+            "default": "algo",
+            "title": "Strategy Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "root_exchange",
+          "root_timeframe",
+          "root_ticker"
+        ],
+        "title": "AlertStrategyInput",
+        "type": "object"
+      },
+      "AlertStrategyUpdate": {
+        "description": "optional fields for",
+        "properties": {
+          "alert_filters": {
+            "additionalProperties": true,
+            "title": "Alert Filters",
+            "type": "object"
+          },
+          "alert_generators": {
+            "additionalProperties": true,
+            "title": "Alert Generators",
+            "type": "object"
+          },
+          "bias_generators": {
+            "additionalProperties": true,
+            "title": "Bias Generators",
+            "type": "object"
+          },
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "enabled_for_trading": {
+            "title": "Enabled For Trading",
+            "type": "boolean"
+          },
+          "indicators": {
+            "additionalProperties": true,
+            "title": "Indicators",
+            "type": "object"
+          },
+          "leverage": {
+            "title": "Leverage",
+            "type": "integer"
+          },
+          "mode": {
+            "title": "Mode",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "public": {
+            "title": "Public",
+            "type": "boolean"
+          },
+          "risk_management": {
+            "$ref": "#/components/schemas/RiskManagement"
+          },
+          "root_exchange": {
+            "title": "Root Exchange",
+            "type": "string"
+          },
+          "root_ticker": {
+            "title": "Root Ticker",
+            "type": "string"
+          },
+          "root_timeframe": {
+            "title": "Root Timeframe",
+            "type": "string"
+          },
+          "strategy_type": {
+            "title": "Strategy Type",
+            "type": "string"
+          }
+        },
+        "title": "AlertStrategyUpdate",
+        "type": "object"
+      },
+      "CommunityStrategyOut": {
+        "properties": {
+          "cumulative_return": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cumulative Return"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "enabled_for_trading": {
+            "default": false,
+            "title": "Enabled For Trading",
+            "type": "boolean"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "max_drawdown": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Drawdown"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "original_strategy_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Original Strategy Id"
+          },
+          "published_mapping_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published Mapping Id"
+          },
+          "published_record": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PublishedRecord"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "root_ticker": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Root Ticker"
+          },
+          "root_timeframe": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Root Timeframe"
+          },
+          "shared_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shared At"
+          },
+          "shared_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shared By"
+          },
+          "shared_by_username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shared By Username"
+          },
+          "sharpe": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sharpe"
+          },
+          "star_count": {
+            "default": 0,
+            "title": "Star Count",
+            "type": "integer"
+          },
+          "subscriber_count": {
+            "default": 0,
+            "title": "Subscriber Count",
+            "type": "integer"
+          },
+          "subscription_canceled": {
+            "default": false,
+            "title": "Subscription Canceled",
+            "type": "boolean"
+          },
+          "subscription_expires_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subscription Expires At"
+          },
+          "subscription_token_cost": {
+            "default": 10.0,
+            "title": "Subscription Token Cost",
+            "type": "number"
+          },
+          "time_in_market": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time In Market"
+          },
+          "total_pnl": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Pnl"
+          },
+          "twitter_handle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Twitter Handle"
+          },
+          "user_has_starred": {
+            "default": false,
+            "title": "User Has Starred",
+            "type": "boolean"
+          },
+          "user_is_owner": {
+            "default": false,
+            "title": "User Is Owner",
+            "type": "boolean"
+          },
+          "user_is_subscribed": {
+            "default": false,
+            "title": "User Is Subscribed",
+            "type": "boolean"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "CommunityStrategyOut",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "PublishedRecord": {
+        "description": "Forward performance of the venue a shared strategy publishes.\n\nDeliberately has no Sharpe or max drawdown: those need a returns series, and\na figure synthesised from a handful of trades would sit next to the\nbacktest's years of data looking equally authoritative.",
+        "properties": {
+          "allocation_usd": {
+            "default": 0.0,
+            "title": "Allocation Usd",
+            "type": "number"
+          },
+          "exchange_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchange Name"
+          },
+          "mode": {
+            "title": "Mode",
+            "type": "string"
+          },
+          "open_positions": {
+            "default": 0,
+            "title": "Open Positions",
+            "type": "integer"
+          },
+          "realized_pnl": {
+            "default": 0.0,
+            "title": "Realized Pnl",
+            "type": "number"
+          },
+          "return_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Pct"
+          },
+          "since": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Since"
+          },
+          "total_pnl": {
+            "default": 0.0,
+            "title": "Total Pnl",
+            "type": "number"
+          },
+          "trades": {
+            "default": 0,
+            "title": "Trades",
+            "type": "integer"
+          },
+          "win_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Win Rate"
+          }
+        },
+        "required": [
+          "mode"
+        ],
+        "title": "PublishedRecord",
+        "type": "object"
+      },
+      "RiskManagement": {
+        "properties": {
+          "stop_loss": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StopLossTrailing"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": {
+              "sl_type": "trailing",
+              "trailing_pct": 0.005
+            }
+          },
+          "take_profit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TakeProfitSpread"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": {
+              "order_spread": [
+                {
+                  "profit_target": 0.05
+                },
+                {
+                  "profit_target": 0.1
+                }
+              ],
+              "tp_type": "spread"
+            }
+          }
+        },
+        "title": "RiskManagement",
+        "type": "object"
+      },
+      "ShareStrategyInput": {
+        "properties": {
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "published_mapping_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published Mapping Id"
+          },
+          "set_published_mapping": {
+            "default": false,
+            "title": "Set Published Mapping",
+            "type": "boolean"
+          },
+          "subscription_token_cost": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subscription Token Cost"
+          }
+        },
+        "title": "ShareStrategyInput",
+        "type": "object"
+      },
+      "StopLossTrailing": {
+        "properties": {
+          "sl_type": {
+            "default": "trailing",
+            "title": "Sl Type",
+            "type": "string"
+          },
+          "trailing_pct": {
+            "default": 0.005,
+            "title": "Trailing Pct",
+            "type": "number"
+          }
+        },
+        "title": "StopLossTrailing",
+        "type": "object"
+      },
+      "TakeProfitOrder": {
+        "properties": {
+          "profit_target": {
+            "title": "Profit Target",
+            "type": "number"
+          }
+        },
+        "required": [
+          "profit_target"
+        ],
+        "title": "TakeProfitOrder",
+        "type": "object"
+      },
+      "TakeProfitSpread": {
+        "properties": {
+          "order_spread": {
+            "items": {
+              "$ref": "#/components/schemas/TakeProfitOrder"
+            },
+            "title": "Order Spread",
+            "type": "array"
+          },
+          "tp_type": {
+            "default": "spread",
+            "title": "Tp Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_spread"
+        ],
+        "title": "TakeProfitSpread",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "Risk Managed - external APIs",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/account/grid-usage": {
+      "get": {
+        "description": "Get daily grid creation usage for the user.",
+        "operationId": "get_grid_usage_account_grid_usage_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Grid Usage",
+        "tags": [
+          "Account"
+        ]
+      }
+    },
+    "/account/me": {
+      "get": {
+        "description": "Get current user info and token balance.",
+        "operationId": "get_me_account_me_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Me",
+        "tags": [
+          "Account"
+        ]
+      }
+    },
+    "/account/positions": {
+      "get": {
+        "description": "List positions for the user's strategies.",
+        "operationId": "get_positions_account_positions_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "mode",
+            "required": false,
+            "schema": {
+              "title": "Mode",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "default": "all",
+              "title": "State",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "strategy_id",
+            "required": false,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "required": false,
+            "schema": {
+              "default": "created_at",
+              "title": "Sort By",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort_dir",
+            "required": false,
+            "schema": {
+              "default": "desc",
+              "title": "Sort Dir",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Positions",
+        "tags": [
+          "Account"
+        ]
+      }
+    },
+    "/agent/admin/per-user-spend": {
+      "get": {
+        "description": "Admin-only: one user's LLM spend for today (UTC).",
+        "operationId": "admin_per_user_spend_agent_admin_per_user_spend_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "title": "User Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Admin Per User Spend",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/admin/per-user-spend/history": {
+      "get": {
+        "description": "Admin-only: one user's daily spend over the last `days` days.",
+        "operationId": "admin_per_user_spend_history_agent_admin_per_user_spend_history_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "title": "User Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "days",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 365,
+              "minimum": 1,
+              "title": "Days",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Admin Per User Spend History",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/admin/platform-spend-today": {
+      "get": {
+        "description": "Admin-only: platform-wide LLM spend for today (UTC).",
+        "operationId": "admin_platform_spend_today_agent_admin_platform_spend_today_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Admin Platform Spend Today",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/instances": {
+      "get": {
+        "description": "List the caller's agent committees.",
+        "operationId": "list_committees_agent_instances_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "enabled_only",
+            "required": false,
+            "schema": {
+              "default": true,
+              "title": "Enabled Only",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Committees",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/instances/from-template": {
+      "post": {
+        "description": "Clone a template into a working committee owned by the caller.\n\nBody: `template_slug` (required), `name` (required), plus the optional\nbinding fields. Any `user_id` in the body is ignored.",
+        "operationId": "clone_template_agent_instances_from_template_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Clone Template",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/instances/{instance_id}": {
+      "delete": {
+        "description": "Delete one of the caller's committees.",
+        "operationId": "delete_committee_agent_instances__instance_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Committee",
+        "tags": [
+          "Agents"
+        ]
+      },
+      "get": {
+        "description": "Fetch one of the caller's committees.",
+        "operationId": "get_committee_agent_instances__instance_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Committee",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/instances/{instance_id}/messages": {
+      "get": {
+        "description": "Read the committee's deliberation transcript.",
+        "operationId": "get_committee_messages_agent_instances__instance_id__messages_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since_id",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Since Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "direction",
+            "required": false,
+            "schema": {
+              "default": "oldest",
+              "pattern": "^(oldest|newest)$",
+              "title": "Direction",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Committee Messages",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/instances/{instance_id}/promotion-events": {
+      "get": {
+        "description": "The committee's promotion/demotion audit trail, newest first.",
+        "operationId": "get_promotion_events_agent_instances__instance_id__promotion_events_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Promotion Events",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/instances/{instance_id}/promotion-status": {
+      "get": {
+        "description": "Whether the committee is eligible for promotion \u2014 `{eligible, missing}`.",
+        "operationId": "get_promotion_status_agent_instances__instance_id__promotion_status_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to_tier",
+            "required": false,
+            "schema": {
+              "default": "auto_live",
+              "title": "To Tier",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Promotion Status",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/instances/{instance_id}/rollback": {
+      "post": {
+        "description": "Roll the committee's tier back to its value before `event_id`.\n\nOnly the most recent event is rollbackable (400 `not_most_recent_event`).",
+        "operationId": "rollback_instance_agent_instances__instance_id__rollback_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Rollback Instance",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/instances/{instance_id}/rollback-candidates": {
+      "get": {
+        "description": "Recent promotion events with a `can_rollback` flag.",
+        "operationId": "list_rollback_candidates_agent_instances__instance_id__rollback_candidates_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Rollback Candidates",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/instances/{instance_id}/runs": {
+      "get": {
+        "description": "List recent runs for the committee, with token counts.",
+        "operationId": "list_committee_runs_agent_instances__instance_id__runs_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "strategy_id",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Committee Runs",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/instances/{instance_id}/tier": {
+      "post": {
+        "description": "Flip the committee's autonomy tier.\n\nBody: `to_tier` (`suggest` | `paper_track` | `auto_live`), optional\n`reason`. The actor recorded in the audit row is always the token's user.",
+        "operationId": "set_committee_tier_agent_instances__instance_id__tier_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Committee Tier",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/instances/{instance_id}/track-record-summary": {
+      "get": {
+        "description": "Headline track-record metrics for the committee.",
+        "operationId": "get_committee_track_record_agent_instances__instance_id__track_record_summary_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Committee Track Record",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/instances/{instance_id}/trigger": {
+      "post": {
+        "description": "Run one deliberation cycle for the caller's committee.",
+        "operationId": "trigger_committee_run_agent_instances__instance_id__trigger_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Trigger Committee Run",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/llm-connections": {
+      "get": {
+        "description": "The caller's platform / direct / remote LLM connections.",
+        "operationId": "list_llm_connections_agent_llm_connections_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Llm Connections",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/llm-connections/direct": {
+      "post": {
+        "description": "Create a Direct connection. Body: `provider`, `label`, `api_key`.\n\nThe key is Fernet-encrypted before persisting and never returned.",
+        "operationId": "create_llm_connection_agent_llm_connections_direct_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Llm Connection",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/llm-connections/{connection_id}": {
+      "delete": {
+        "description": "Delete one of the caller's connections.",
+        "operationId": "delete_llm_connection_agent_llm_connections__connection_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connection_id",
+            "required": true,
+            "schema": {
+              "title": "Connection Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Llm Connection",
+        "tags": [
+          "Agents"
+        ]
+      },
+      "patch": {
+        "description": "Update a connection's label, key, endpoint, or enabled flag.",
+        "operationId": "update_llm_connection_agent_llm_connections__connection_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connection_id",
+            "required": true,
+            "schema": {
+              "title": "Connection Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Llm Connection",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/llm-connections/{connection_id}/reveal": {
+      "post": {
+        "description": "Return the plaintext API key for one of the caller's Direct connections.",
+        "operationId": "reveal_llm_connection_key_agent_llm_connections__connection_id__reveal_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connection_id",
+            "required": true,
+            "schema": {
+              "title": "Connection Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reveal Llm Connection Key",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/llm-connections/{connection_id}/test": {
+      "post": {
+        "description": "Send a 1-token ping to verify the connection works.",
+        "operationId": "test_llm_connection_agent_llm_connections__connection_id__test_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connection_id",
+            "required": true,
+            "schema": {
+              "title": "Connection Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Test Llm Connection",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/macro/events": {
+      "get": {
+        "description": "Scheduled macro events, soonest first when unfiltered.",
+        "operationId": "list_macro_events_agent_macro_events_get",
+        "parameters": [
+          {
+            "description": "scheduled_at >= from_ts (0 = unbounded)",
+            "in": "query",
+            "name": "from_ts",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "scheduled_at >= from_ts (0 = unbounded)",
+              "minimum": 0,
+              "title": "From Ts",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "scheduled_at <= to_ts (0 = unbounded)",
+            "in": "query",
+            "name": "to_ts",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "scheduled_at <= to_ts (0 = unbounded)",
+              "minimum": 0,
+              "title": "To Ts",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "low | medium | high",
+            "in": "query",
+            "name": "impact",
+            "required": false,
+            "schema": {
+              "default": "",
+              "description": "low | medium | high",
+              "title": "Impact",
+              "type": "string"
+            }
+          },
+          {
+            "description": "fred | fred_projection | manual",
+            "in": "query",
+            "name": "source",
+            "required": false,
+            "schema": {
+              "default": "",
+              "description": "fred | fred_projection | manual",
+              "title": "Source",
+              "type": "string"
+            }
+          },
+          {
+            "description": "filter by affected_symbols entry",
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "default": "",
+              "description": "filter by affected_symbols entry",
+              "title": "Symbol",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Macro Events",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/macro/events/{event_id}": {
+      "get": {
+        "description": "Fetch one macro event.",
+        "operationId": "get_macro_event_agent_macro_events__event_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "event_id",
+            "required": true,
+            "schema": {
+              "title": "Event Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Macro Event",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/model-routes": {
+      "get": {
+        "description": "The caller's per-task-class LLM model routes.",
+        "operationId": "list_model_routes_agent_model_routes_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Model Routes",
+        "tags": [
+          "Agents"
+        ]
+      },
+      "post": {
+        "description": "Create or update a route. Body: `task_class`, `provider`, `model`.",
+        "operationId": "upsert_model_route_agent_model_routes_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Upsert Model Route",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/model-routes/{task_class}": {
+      "delete": {
+        "description": "Remove one of the caller's routes.",
+        "operationId": "delete_model_route_agent_model_routes__task_class__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "task_class",
+            "required": true,
+            "schema": {
+              "title": "Task Class",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Model Route",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/news/articles": {
+      "get": {
+        "description": "Recent news articles, with optional symbol/sentiment/urgency filters.\n\nOnly articles that have been sentiment-tagged carry `sentiment` and\n`urgency`; the same tagged rows are what the `NewsSentiment` indicator\nreads, so this is the way to check an indicator will have data before\nbuilding a strategy on it.",
+        "operationId": "list_news_articles_agent_news_articles_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "query",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Query",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "credibility_tier",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Credibility Tier",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "hours",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "maximum": 720,
+              "minimum": 0,
+              "title": "Hours",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Symbol"
+            }
+          },
+          {
+            "description": "bullish | bearish | neutral",
+            "in": "query",
+            "name": "sentiment",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "bullish | bearish | neutral",
+              "title": "Sentiment"
+            }
+          },
+          {
+            "description": "low | medium | high",
+            "in": "query",
+            "name": "urgency",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "low | medium | high",
+              "title": "Urgency"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List News Articles",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/news/articles/{article_id}": {
+      "get": {
+        "description": "Fetch one news article.",
+        "operationId": "get_news_article_agent_news_articles__article_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "article_id",
+            "required": true,
+            "schema": {
+              "title": "Article Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get News Article",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/news/sources": {
+      "get": {
+        "description": "Configured news sources with their enabled flag and last poll time.",
+        "operationId": "list_news_sources_agent_news_sources_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List News Sources",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/proposals/pending": {
+      "get": {
+        "description": "Pending proposals awaiting approval.\n\nScoped to one committee with `instance_id`, otherwise across every\ncommittee the caller owns. The internal route requires `instance_id`,\nwhich is why the MCP's `list_pending_proposals(user_id=\u2026)` always 422'd \u2014\nit sent the one parameter the route did not accept.",
+        "operationId": "list_pending_proposals_agent_proposals_pending_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "instance_id",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Instance Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Pending Proposals",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/proposals/{proposal_id}": {
+      "get": {
+        "description": "Fetch one proposal.",
+        "operationId": "get_proposal_agent_proposals__proposal_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proposal_id",
+            "required": true,
+            "schema": {
+              "title": "Proposal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Proposal",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/proposals/{proposal_id}/approve": {
+      "post": {
+        "description": "Approve a proposal, filling it against the mapped strategy.",
+        "operationId": "approve_proposal_agent_proposals__proposal_id__approve_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proposal_id",
+            "required": true,
+            "schema": {
+              "title": "Proposal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Approve Proposal",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/proposals/{proposal_id}/reject": {
+      "post": {
+        "description": "Reject a proposal. Body may carry a `reason`.",
+        "operationId": "reject_proposal_agent_proposals__proposal_id__reject_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proposal_id",
+            "required": true,
+            "schema": {
+              "title": "Proposal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reject Proposal",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/templates": {
+      "get": {
+        "description": "List the hedge-fund committee templates available to clone.",
+        "operationId": "list_templates_agent_templates_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "enabled_only",
+            "required": false,
+            "schema": {
+              "default": true,
+              "title": "Enabled Only",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Templates",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/templates/{slug}": {
+      "get": {
+        "description": "Fetch one template by slug.",
+        "operationId": "get_template_agent_templates__slug__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Template",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/user-settings": {
+      "get": {
+        "description": "The caller's daily token cap and today's usage.",
+        "operationId": "get_user_settings_agent_user_settings_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get User Settings",
+        "tags": [
+          "Agents"
+        ]
+      },
+      "put": {
+        "description": "Set or clear the caller's daily token cap.\n\nBody: `{\"daily_token_cap\": int | null}` \u2014 null clears enforcement.",
+        "operationId": "set_daily_token_cap_agent_user_settings_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Daily Token Cap",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/community/share/{strategy_id}": {
+      "post": {
+        "description": "Share one of the caller's strategies to the community.\n\nBody: `message`, `subscription_token_cost`, `published_mapping_id`,\n`set_published_mapping`. The mapping must be one the caller owns and must\nbelong to this strategy \u2014 `community_service` enforces both.",
+        "operationId": "share_strategy_community_share__strategy_id__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShareStrategyInput",
+                "default": {
+                  "set_published_mapping": false
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityStrategyOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Share Strategy",
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/grids/": {
+      "get": {
+        "operationId": "list_grids_grids__get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Grids",
+        "tags": [
+          "Grids"
+        ]
+      },
+      "post": {
+        "description": "Create a grid search from a template (costs tokens).",
+        "operationId": "create_grid_grids__post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "template_id",
+            "required": false,
+            "schema": {
+              "title": "Template Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Grid",
+        "tags": [
+          "Grids"
+        ]
+      }
+    },
+    "/grids/templates": {
+      "get": {
+        "description": "List all grid templates for the current user.",
+        "operationId": "list_grid_templates_grids_templates_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Grid Templates",
+        "tags": [
+          "Grids"
+        ]
+      },
+      "post": {
+        "description": "Create a grid template from an existing strategy.",
+        "operationId": "create_grid_template_grids_templates_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "strategy_id",
+            "required": false,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Grid Template",
+        "tags": [
+          "Grids"
+        ]
+      }
+    },
+    "/grids/templates/{template_id}": {
+      "delete": {
+        "operationId": "delete_grid_template_grids_templates__template_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "title": "Template Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Grid Template",
+        "tags": [
+          "Grids"
+        ]
+      },
+      "get": {
+        "operationId": "get_grid_template_grids_templates__template_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "title": "Template Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Grid Template",
+        "tags": [
+          "Grids"
+        ]
+      },
+      "put": {
+        "operationId": "update_grid_template_grids_templates__template_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "title": "Template Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Grid Template",
+        "tags": [
+          "Grids"
+        ]
+      }
+    },
+    "/grids/templates/{template_id}/variations": {
+      "get": {
+        "operationId": "check_variations_grids_templates__template_id__variations_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "title": "Template Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Check Variations",
+        "tags": [
+          "Grids"
+        ]
+      }
+    },
+    "/grids/{grid_id}": {
+      "get": {
+        "description": "A grid's detail, including every variation and its backtest results.\n\nOwnership is checked against the row rather than the returned dict, which\ncarries no `user_id`. This route previously resolved the caller and then\nignored them \u2014 `grid_service.get_grid` filters on the id alone, so any\ntoken could read any user's variations, parameters and results. Its\nsiblings `list_grids` and `archive_grid` were always scoped.",
+        "operationId": "get_grid_grids__grid_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "grid_id",
+            "required": true,
+            "schema": {
+              "title": "Grid Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Grid",
+        "tags": [
+          "Grids"
+        ]
+      }
+    },
+    "/grids/{grid_id}/archive": {
+      "post": {
+        "operationId": "archive_grid_grids__grid_id__archive_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "grid_id",
+            "required": true,
+            "schema": {
+              "title": "Grid Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Archive Grid",
+        "tags": [
+          "Grids"
+        ]
+      }
+    },
+    "/reference/constants": {
+      "get": {
+        "description": "Get platform constants: timeframes, exchanges, trigger types, etc.",
+        "operationId": "get_constants_reference_constants_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Constants",
+        "tags": [
+          "Reference Data"
+        ]
+      }
+    },
+    "/reference/indicators": {
+      "get": {
+        "description": "List all available indicator types grouped by category.",
+        "operationId": "list_indicator_types_reference_indicators_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Indicator Types",
+        "tags": [
+          "Reference Data"
+        ]
+      }
+    },
+    "/reference/indicators/{indicator_name}/schema": {
+      "get": {
+        "description": "Get the parameter schema and output lines for a specific indicator type.",
+        "operationId": "get_indicator_schema_reference_indicators__indicator_name__schema_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "indicator_name",
+            "required": true,
+            "schema": {
+              "title": "Indicator Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Indicator Schema",
+        "tags": [
+          "Reference Data"
+        ]
+      }
+    },
+    "/reference/patterns": {
+      "get": {
+        "description": "List all available candlestick patterns.",
+        "operationId": "list_patterns_reference_patterns_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Patterns",
+        "tags": [
+          "Reference Data"
+        ]
+      }
+    },
+    "/reference/risk/stop-loss-types": {
+      "get": {
+        "description": "List available stop-loss strategy types.",
+        "operationId": "list_stop_loss_types_reference_risk_stop_loss_types_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Stop Loss Types",
+        "tags": [
+          "Reference Data"
+        ]
+      }
+    },
+    "/reference/risk/stop-loss/{name}/schema": {
+      "get": {
+        "description": "Get the parameter schema for a stop-loss type.",
+        "operationId": "get_stop_loss_schema_reference_risk_stop_loss__name__schema_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Stop Loss Schema",
+        "tags": [
+          "Reference Data"
+        ]
+      }
+    },
+    "/reference/risk/take-profit-types": {
+      "get": {
+        "description": "List available take-profit strategy types.",
+        "operationId": "list_take_profit_types_reference_risk_take_profit_types_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Take Profit Types",
+        "tags": [
+          "Reference Data"
+        ]
+      }
+    },
+    "/reference/risk/take-profit/{name}/schema": {
+      "get": {
+        "description": "Get the parameter schema for a take-profit type.",
+        "operationId": "get_take_profit_schema_reference_risk_take_profit__name__schema_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Take Profit Schema",
+        "tags": [
+          "Reference Data"
+        ]
+      }
+    },
+    "/reference/tickers": {
+      "get": {
+        "description": "Search available tickers for a given exchange.",
+        "operationId": "search_tickers_reference_tickers_get",
+        "parameters": [
+          {
+            "description": "Search by name or symbol",
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "default": "",
+              "description": "Search by name or symbol",
+              "title": "Search",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Exchange: binance",
+            "in": "query",
+            "name": "exchange",
+            "required": false,
+            "schema": {
+              "default": "binance",
+              "description": "Exchange: binance",
+              "title": "Exchange",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Search Tickers",
+        "tags": [
+          "Reference Data"
+        ]
+      }
+    },
+    "/strategies/": {
+      "get": {
+        "operationId": "list_strategies_strategies__get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "title": "Search",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "root_timeframe",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Root Timeframe"
+            }
+          },
+          {
+            "in": "query",
+            "name": "root_ticker",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Root Ticker"
+            }
+          },
+          {
+            "in": "query",
+            "name": "root_exchange",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Root Exchange"
+            }
+          },
+          {
+            "in": "query",
+            "name": "strategy_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Strategy Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "mode",
+            "required": false,
+            "schema": {
+              "title": "Mode",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "required": false,
+            "schema": {
+              "title": "Sort By",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "archived",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Archived",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Strategies",
+        "tags": [
+          "Strategies"
+        ]
+      },
+      "post": {
+        "operationId": "create_strategy_strategies__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertStrategyInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Strategy",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}": {
+      "delete": {
+        "operationId": "delete_strategy_strategies__strategy_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Strategy",
+        "tags": [
+          "Strategies"
+        ]
+      },
+      "get": {
+        "operationId": "get_strategy_strategies__strategy_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Strategy",
+        "tags": [
+          "Strategies"
+        ]
+      },
+      "put": {
+        "operationId": "update_strategy_strategies__strategy_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertStrategyUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Strategy",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/archive": {
+      "post": {
+        "operationId": "archive_strategy_strategies__strategy_id__archive_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Archive Strategy",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/backtest": {
+      "post": {
+        "operationId": "run_backtest_strategies__strategy_id__backtest_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Backtest",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/bias": {
+      "post": {
+        "operationId": "add_bias_generator_strategies__strategy_id__bias_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Bias Generator",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/bias/{bias_name}": {
+      "delete": {
+        "operationId": "delete_bias_generator_strategies__strategy_id__bias__bias_name__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "bias_name",
+            "required": true,
+            "schema": {
+              "title": "Bias Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Bias Generator",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/bias/{bias_name}/rules": {
+      "post": {
+        "operationId": "add_bias_rule_strategies__strategy_id__bias__bias_name__rules_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "bias_name",
+            "required": true,
+            "schema": {
+              "title": "Bias Name",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "bias_direction",
+            "required": false,
+            "schema": {
+              "default": "long",
+              "title": "Bias Direction",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "conditions",
+            "required": false,
+            "schema": {
+              "default": "[]",
+              "title": "Conditions",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Bias Rule",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/bias/{bias_name}/rules/{rule_index}": {
+      "delete": {
+        "operationId": "delete_bias_rule_strategies__strategy_id__bias__bias_name__rules__rule_index__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "bias_name",
+            "required": true,
+            "schema": {
+              "title": "Bias Name",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "rule_index",
+            "required": true,
+            "schema": {
+              "title": "Rule Index",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Bias Rule",
+        "tags": [
+          "Strategies"
+        ]
+      },
+      "put": {
+        "operationId": "edit_bias_rule_strategies__strategy_id__bias__bias_name__rules__rule_index__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "bias_name",
+            "required": true,
+            "schema": {
+              "title": "Bias Name",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "rule_index",
+            "required": true,
+            "schema": {
+              "title": "Rule Index",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "bias_direction",
+            "required": false,
+            "schema": {
+              "default": "long",
+              "title": "Bias Direction",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "conditions",
+            "required": false,
+            "schema": {
+              "default": "[]",
+              "title": "Conditions",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Edit Bias Rule",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/clone": {
+      "post": {
+        "description": "Copy a strategy's logic into a new strategy owned by the caller.\n\nA clone is *not* live. It carries no exchange mappings, so it reads as\npaper, and taking it live means creating a live mapping \u2014 the copy itself\nis just the indicators, rules and risk settings. The old \"(Live)\" suffix\nand \"promoted to live\" message described the retired model where `mode`\nwas a column on the row.",
+        "operationId": "clone_strategy_strategies__strategy_id__clone_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Clone Strategy",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/commit": {
+      "post": {
+        "operationId": "commit_version_strategies__strategy_id__commit_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Commit Version",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/indicators/{indicator_name}": {
+      "delete": {
+        "operationId": "delete_indicator_strategies__strategy_id__indicators__indicator_name__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "indicator_name",
+            "required": true,
+            "schema": {
+              "title": "Indicator Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Indicator",
+        "tags": [
+          "Strategies"
+        ]
+      },
+      "post": {
+        "operationId": "add_indicator_strategies__strategy_id__indicators__indicator_name__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "indicator_name",
+            "required": true,
+            "schema": {
+              "title": "Indicator Name",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Indicator Input",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Indicator",
+        "tags": [
+          "Strategies"
+        ]
+      },
+      "put": {
+        "operationId": "update_indicator_strategies__strategy_id__indicators__indicator_name__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "indicator_name",
+            "required": true,
+            "schema": {
+              "title": "Indicator Name",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Indicator Input",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Indicator",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/montecarlo": {
+      "get": {
+        "operationId": "get_monte_carlo_strategies__strategy_id__montecarlo_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Monte Carlo",
+        "tags": [
+          "Strategies"
+        ]
+      },
+      "post": {
+        "operationId": "run_monte_carlo_strategies__strategy_id__montecarlo_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Monte Carlo",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/reports": {
+      "get": {
+        "operationId": "get_reports_strategies__strategy_id__reports_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Reports",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/restore/{version_id}": {
+      "post": {
+        "operationId": "restore_version_strategies__strategy_id__restore__version_id__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "version_id",
+            "required": true,
+            "schema": {
+              "title": "Version Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Restore Version",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/risk/stop-loss": {
+      "delete": {
+        "operationId": "remove_stop_loss_strategies__strategy_id__risk_stop_loss_delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Remove Stop Loss",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/risk/stop-loss/{sl_type}": {
+      "put": {
+        "operationId": "set_stop_loss_strategies__strategy_id__risk_stop_loss__sl_type__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "sl_type",
+            "required": true,
+            "schema": {
+              "title": "Sl Type",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Config",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Stop Loss",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/risk/take-profit": {
+      "delete": {
+        "operationId": "remove_take_profit_strategies__strategy_id__risk_take_profit_delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Remove Take Profit",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/risk/take-profit/{tp_type}": {
+      "put": {
+        "operationId": "set_take_profit_strategies__strategy_id__risk_take_profit__tp_type__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "tp_type",
+            "required": true,
+            "schema": {
+              "title": "Tp Type",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Config",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Take Profit",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/signals": {
+      "post": {
+        "operationId": "add_signal_group_strategies__strategy_id__signals_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Signal Group",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/signals/{signal_name}": {
+      "delete": {
+        "operationId": "delete_signal_group_strategies__strategy_id__signals__signal_name__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "signal_name",
+            "required": true,
+            "schema": {
+              "title": "Signal Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Signal Group",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/signals/{signal_name}/rules": {
+      "post": {
+        "operationId": "add_signal_rule_strategies__strategy_id__signals__signal_name__rules_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "signal_name",
+            "required": true,
+            "schema": {
+              "title": "Signal Name",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "trigger_action",
+            "required": false,
+            "schema": {
+              "default": "enter_position",
+              "title": "Trigger Action",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "trigger_direction",
+            "required": false,
+            "schema": {
+              "default": "long",
+              "title": "Trigger Direction",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "conditions",
+            "required": false,
+            "schema": {
+              "default": "[]",
+              "title": "Conditions",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Signal Rule",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/signals/{signal_name}/rules/{rule_index}": {
+      "delete": {
+        "operationId": "delete_signal_rule_strategies__strategy_id__signals__signal_name__rules__rule_index__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "signal_name",
+            "required": true,
+            "schema": {
+              "title": "Signal Name",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "rule_index",
+            "required": true,
+            "schema": {
+              "title": "Rule Index",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Signal Rule",
+        "tags": [
+          "Strategies"
+        ]
+      },
+      "put": {
+        "operationId": "edit_signal_rule_strategies__strategy_id__signals__signal_name__rules__rule_index__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "signal_name",
+            "required": true,
+            "schema": {
+              "title": "Signal Name",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "rule_index",
+            "required": true,
+            "schema": {
+              "title": "Rule Index",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "trigger_action",
+            "required": false,
+            "schema": {
+              "default": "enter_position",
+              "title": "Trigger Action",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "trigger_direction",
+            "required": false,
+            "schema": {
+              "default": "long",
+              "title": "Trigger Direction",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "conditions",
+            "required": false,
+            "schema": {
+              "default": "[]",
+              "title": "Conditions",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Edit Signal Rule",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/unarchive": {
+      "post": {
+        "operationId": "unarchive_strategy_strategies__strategy_id__unarchive_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Unarchive Strategy",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    },
+    "/strategies/{strategy_id}/versions": {
+      "get": {
+        "operationId": "get_versions_strategies__strategy_id__versions_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "strategy_id",
+            "required": true,
+            "schema": {
+              "title": "Strategy Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Versions",
+        "tags": [
+          "Strategies"
+        ]
+      }
+    }
+  }
+}

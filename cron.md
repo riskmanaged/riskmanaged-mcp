@@ -163,14 +163,14 @@ riskmanaged reference tickers --search "<TICKER>" --exchange binance
 ```
 
 - **IF** the ticker appears in results → **PASS**. Record the exact symbol (e.g., `BTCUSDT`).
-- **IF** not found → try `--exchange bittensor`. If still not found → **pick a default**: `BTCUSDT`.
+- **IF** not found → retry the search with a shorter fragment of the symbol. If still not found → **pick a default**: `BTCUSDT`.
 
 ### Step 3.3 — Create the Strategy
 
 Run:
 
 ```bash
-riskmanaged strategies create --name "<hypothesis_name>" --exchange binance --timeframe "<timeframe>" --ticker "<TICKER>" --mode backtest
+riskmanaged strategies create --name "<hypothesis_name>" --exchange binance --timeframe "<timeframe>" --ticker "<TICKER>"
 ```
 
 - **IF** response contains an `id` field → **PASS**. Record `$STRATEGY_ID` = the returned `id`.
@@ -193,7 +193,7 @@ riskmanaged indicators add $STRATEGY_ID <IndicatorType> --params '{"<param>": <v
 - If the schema shows a parameter with a `default`, you may omit it to use the default.
 
 **RECORD THE INDICATOR NAME** — You will need it in Step 3.6 for signal rules:
-- **IF you did NOT pass a custom `name`** in `--params` → the indicator name defaults to `{type_lowercase}_{ticker}_{timeframe}` (e.g., adding `RSI` to a strategy with ticker `BTCUSDT` and timeframe `30m` → indicator name is `rsi_btcusdt_30m`).
+- **IF you did NOT pass a custom `name`** in `--params` → the indicator name is **the type name itself** (e.g., adding `RSI` → the indicator is named `RSI`, and its lines are `RSI.rsi`, `RSI.rsi_ob`, `RSI.rsi_os`). The ticker and timeframe do **not** appear in the name.
 - **IF you passed a custom `name`** in `--params` (e.g., `--params '{"name": "fast_rsi", "length": 7}'`) → the indicator name is exactly what you provided (e.g., `fast_rsi`).
 - **Write down every indicator name** as you add them. These names are the prefix for all line references in signal conditions.
 
@@ -222,7 +222,7 @@ riskmanaged signals add-group $STRATEGY_ID main_signals
 >
 > | How you added it | Indicator name | Example line reference |
 > |---|---|---|
-> | **No custom name** (default) | `{type_lowercase}_{ticker}_{timeframe}` | `rsi_btcusdt_30m.rsi` |
+> | **No custom name** (default) | the type name | `RSI.rsi` |
 > | **Custom name provided** via `--params '{"name": "X"}'` | Exactly `X` | `fast_rsi.rsi` |
 >
 > To verify, run `riskmanaged strategies get $STRATEGY_ID` and look at the keys inside the `indicators` object — those keys ARE the indicator names.
@@ -252,20 +252,22 @@ OR for comparing two indicator lines:
 **LINE NAME RULES** (these are the #1 source of errors):
 - Format: **`{indicator_name}.{line_name}`**
 - `indicator_name` = the name recorded in Step 3.4 (either the default or your custom name)
-- Default name formula: `{type_lowercase}_{ticker}_{timeframe}` — type is lowercased (e.g., `RSI` → `rsi`), ticker is always lowercase (e.g., `btcusdt`)
+- Default name: the type name exactly as listed by `riskmanaged indicators list-types` (e.g., `RSI`, `MACD`, `BollingerBands`). No ticker, no timeframe, no lowercasing.
 - `line_name` = exactly as returned in the schema's `lines` array from `riskmanaged indicators schema <type>`
 
 **Examples**:
-- Default: RSI added to BTCUSDT 30m → line is `rsi_btcusdt_30m.rsi`
+- Default: RSI added to BTCUSDT 30m → line is `RSI.rsi`
 - Custom: RSI added with `"name": "fast_rsi"` → line is `fast_rsi.rsi`
-- Default: MACD added to ETHUSDT 1h → lines are `macd_ethusdt_1h.macd`, `macd_ethusdt_1h.macd_signal`, `macd_ethusdt_1h.macd_hist`
+- Default: MACD added to ETHUSDT 1h → lines are `MACD.macd`, `MACD.signal`, `MACD.histogram`, `MACD.zero`
+
+> There is no `macd_signal` or `macd_hist` line. Always take line names verbatim
+> from the schema's `lines` array — never construct them.
 
 Run:
 
 ```bash
 riskmanaged signals add-rule $STRATEGY_ID main_signals --action enter_position --direction <long/short> --conditions '<your conditions JSON array>'
 ```
-**note** the bittensor exchange does not support short positions, so you should only use long positions for bittensor exchanges.
 
 - **IF** success → continue
 - **IF** error mentioning "invalid_condition_line" → the API validates lines at rule creation time. Read the `available_lines` array from the error response body to see exactly which lines exist on this strategy. Fix your line references to match and retry.
@@ -306,9 +308,13 @@ Skip this step if no bias filter is part of your hypothesis.
 
 | Type | Config | When to Use |
 |------|--------|-------------|
-| `StopLossSimple` | `{"stop_pct": 0.03}` | Fixed percentage stop |
+| `StopLossSimple` | `{"stoploss_pct": -0.03}` | Fixed percentage stop (negative) |
 | `StopLossTrailing` | `{"trailing_pct": 0.025}` | Trailing stop (recommended) |
-| `StopLossAtr` | `{"atr_multiplier": 2.0}` | Volatility-based stop |
+| `StopLossAtr` | `{"atr_multiplier": 2.0, "atr_line": "ATR.atr_sma"}` | Volatility-based stop |
+
+> `StopLossAtr` needs `atr_line` pointing at an ATR line on **this** strategy —
+> add an `ATR` indicator first. Its built-in default refers to an indicator your
+> strategy will not have.
 
 Run:
 ```bash
@@ -366,11 +372,14 @@ Run:
 riskmanaged backtest reports $STRATEGY_ID
 ```
 
-Record:
-- `$SHARPE` = Sharpe ratio
-- `$RETURN` = cumulative return
-- `$DRAWDOWN` = max drawdown
-- `$TIME_IN_MARKET` = time in market percentage
+Record — these live under the response's **`stats`** object, not at the top level:
+- `$SHARPE` = `stats.sharpe`
+- `$RETURN` = `stats.cumulative_return`
+- `$DRAWDOWN` = `stats.max_drawdown`
+- `$TIME_IN_MARKET` = `stats.time_in_market`
+
+> If the strategy has never been backtested, this returns **404**. Run
+> `riskmanaged backtest run $STRATEGY_ID` first.
 
 **Reasonableness check** (not about performance — just about whether the strategy is functional):
 - **IF** `$TIME_IN_MARKET == 0` → the strategy never entered a trade. Entry conditions are too restrictive. Go back to Step 3.6 and loosen conditions.
@@ -405,7 +414,9 @@ Run:
 riskmanaged grids create-template $STRATEGY_ID
 ```
 
-- **IF** response contains `template_id` (or `id`) → **PASS**. Record `$TEMPLATE_ID`.
+- **IF** the response is a template id → **PASS**. Record `$TEMPLATE_ID`.
+  The endpoint returns the id as a **bare JSON string**, not an object — there is
+  no `template_id` key to read.
 - **IF** error → the strategy may not be valid for grid search. Check gate 3 conditions again.
 
 ### Step 5.2 — Check Variation Count
@@ -434,20 +445,33 @@ The grid template auto-generates default parameter ranges. You **must** validate
 
 **IF `$COUNT > $LIMIT`** (over the limit — **must fix before proceeding**):
 
-> ⚠ **This is never acceptable.** You cannot proceed to Phase 6 while over the limit. Apply these adjustments in order until `$COUNT <= $LIMIT`:
+> ⚠ **This is never acceptable.** You cannot proceed to Phase 6 while over the limit.
 
-1. **Increase `range_step`**: Double the step size on the parameter with the most values. This halves that parameter's contribution to the product.
+**How to apply any adjustment.** There is exactly one way to change a template,
+and it replaces the whole `template_data` — so always read it first, edit the
+structure, then write it back:
+
+```bash
+riskmanaged grids get-template $TEMPLATE_ID      # read the current template_data
+riskmanaged grids update-template $TEMPLATE_ID --data '{"template_data": { ...edited... }}'
+riskmanaged grids variations $TEMPLATE_ID        # re-check {count, limit}
+```
+
+Apply these in order until `$COUNT <= $LIMIT`, re-checking after each:
+
+1. **Increase `range_step`**: Double the step on the parameter with the most values. This roughly halves that parameter's contribution to the product.
 2. **Narrow ranges**: Reduce `range_start` and/or `range_end` to shrink the number of discrete values per parameter.
-3. **Remove indicator variations**: If the template varies parameters on 3+ indicators, fix the least important indicator's parameters to single values (set `range_start == range_end`).
+3. **Remove indicator variations**: If the template varies parameters on 3+ indicators, fix the least important indicator's parameters to single values by setting `range_start == range_end`.
 4. **Remove timeframe/ticker variations**: Reduce `grid` arrays to a single value.
-5. After each adjustment, re-check: `riskmanaged grids variations $TEMPLATE_ID`.
 
 ---
 
 **IF `$COUNT < $LIMIT * 0.5`** (under-utilizing the limit):
 
 1. Get the current template: `riskmanaged grids get-template $TEMPLATE_ID`.
-2. Identify parameters with narrow ranges or large step sizes.
+2. Identify parameters with narrow ranges or large step sizes. Apply edits with
+   `riskmanaged grids update-template $TEMPLATE_ID --data '{"template_data": {...}}'`,
+   which replaces the whole `template_data`.
 3. **Widen ranges**: Expand `range_start` and `range_end`. For integer parameters like periods, use broader exploration windows.
 4. **Reduce step sizes**: If `range_step` is large, reduce it to produce more values (e.g., step 5 → step 2).
 5. **Add timeframe variations**: Add timeframes to the `grid` array (e.g., `["15m", "30m", "1h"]`).
@@ -541,17 +565,22 @@ riskmanaged grids get $GRID_ID
 
 ### Step 7.2 — Extract Top Performers
 
-From the `variations` array in the response, filter to variations where `tested == true` and `backtest` data exists.
+From the `variations` array in the response, filter to variations where `tested == true` and a `backtest` object is present.
 
-Sort by `sharpe` descending. Record the **top 5** variations:
+The metrics are nested under `backtest` — only `id`, `name`, `root_ticker`,
+`root_timeframe` and `tested` are top-level, and `backtest` is **absent
+entirely** for untested variations. Sorting on a top-level `sharpe` yields
+`None` for every row.
+
+Sort by `backtest.sharpe` descending. Record the **top 5**:
 
 For each, note:
 - `id` (strategy_id)
 - `name`
-- `sharpe`
-- `cumulative_return`
-- `max_drawdown`
-- `time_in_market`
+- `backtest.sharpe`
+- `backtest.cumulative_return`
+- `backtest.max_drawdown`
+- `backtest.time_in_market`
 
 ### Step 7.3 — Analyze Patterns
 
@@ -681,18 +710,18 @@ riskmanaged indicators schema <IndicatorType>
 
 The `schema` command returns the `lines` array — these are the **exact** output line names you must use in signal and bias rule conditions. Always run `schema` before adding an indicator or writing conditions.
 
-> **Remember**: The full line reference is `{indicator_name}.{line}`. If you used the default name, `indicator_name` = `{type_lowercase}_{ticker}_{timeframe}` (e.g., `rsi_btcusdt_30m.rsi`). If you set a custom name, use that instead (e.g., `fast_rsi.rsi`).
+> **Remember**: The full line reference is `{indicator_name}.{line}`. With the default name that is just the type — `RSI.rsi`. With a custom name it is that name — `fast_rsi.rsi`.
 
 ## Condition Format Quick Reference
 
 **Compare indicator to fixed value:**
 ```json
-{"trigger_line": "rsi_btcusdt_30m.rsi", "trigger": "crossover", "threshold_value": 30}
+{"trigger_line": "RSI.rsi", "trigger": "crossover", "threshold_value": 30}
 ```
 
 **Compare two indicator lines:**
 ```json
-{"trigger_line": "macd_btcusdt_30m.macd", "trigger": "crossover", "threshold_line": "macd_btcusdt_30m.macd_signal"}
+{"trigger_line": "MACD.macd", "trigger": "crossover", "threshold_line": "MACD.signal"}
 ```
 
 **Available triggers:** `crossover`, `crossunder`, `gt`, `ge`, `lt`, `le`, `eq`
@@ -702,26 +731,24 @@ The `schema` command returns the `lines` array — these are the **exact** outpu
 **Stop Loss Types:**
 ```json
 // Simple
-{"sl_type": "StopLossSimple", "config": {"stop_pct": 0.03}}
+{"sl_type": "StopLossSimple", "stoploss_pct": -0.03}
 
 // Trailing (recommended)
-{"sl_type": "StopLossTrailing", "config": {"trailing_pct": 0.025}}
+{"sl_type": "StopLossTrailing", "trailing_pct": 0.025}
 
 // ATR-based
-{"sl_type": "StopLossAtr", "config": {"atr_multiplier": 2.0}}
+{"sl_type": "StopLossAtr", "atr_multiplier": 2.0, "atr_line": "ATR.atr_sma"}
 ```
 
 **Take Profit:**
 ```json
 {
   "tp_type": "TakeProfitSpread",
-  "config": {
-    "order_spread": [
-      {"profit_target": 0.03},
-      {"profit_target": 0.06},
-      {"profit_target": 0.10}
-    ]
-  }
+  "order_spread": [
+    {"profit_target": 0.03},
+    {"profit_target": 0.06},
+    {"profit_target": 0.10}
+  ]
 }
 ```
 
@@ -758,7 +785,7 @@ skills:
 | Variable | Where to Set | Value |
 |----------|-------------|-------|
 | `RISKMANAGED_TOKEN` | OpenClaw Settings → Skills → Environment Variables | Your API token from [riskmanaged.io/profile](https://riskmanaged.io/profile) |
-| `RISKMANAGED_URL` | OpenClaw Settings → Skills → Environment Variables | `https://riskmanaged.io` |
+| `RISKMANAGED_URL` | OpenClaw Settings → Skills → Environment Variables | `https://agent.riskmanaged.io` |
 
 **4. Verify the cron is registered:**
 
@@ -782,7 +809,7 @@ crons:
       - web-search-plus
     env:
       RISKMANAGED_TOKEN: "YOUR_TOKEN"
-      RISKMANAGED_URL: "https://riskmanaged.io"
+      RISKMANAGED_URL: "https://agent.riskmanaged.io"
 ```
 
 **2. Reload Hermes** to pick up the new cron:
