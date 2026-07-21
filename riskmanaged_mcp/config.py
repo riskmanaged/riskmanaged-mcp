@@ -1,6 +1,12 @@
-"""Config management — stores API token and base URL in ~/.riskmanaged/config.json."""
+"""Config management — stores API token and base URL in ~/.riskmanaged/config.json.
+
+Precedence for reads: env vars (RISKMANAGED_TOKEN / RISKMANAGED_URL)
+override the on-disk config. This lets CI / Docker / the MCP server
+itself pass credentials without writing to disk.
+"""
 
 import json
+import os
 from pathlib import Path
 
 CONFIG_DIR = Path.home() / ".riskmanaged"
@@ -14,10 +20,22 @@ def _ensure_dir():
 
 
 def load_config() -> dict:
-    """Load config from disk. Returns empty dict if not found."""
+    """Load config from disk. Returns empty dict if not found.
+
+    A corrupt file raises a `ValueError` that names the path: the bare
+    `JSONDecodeError` reports a line and column but not *which* file, which is
+    useless when the file is one the user never opens by hand.
+    """
     if not CONFIG_FILE.exists():
         return {}
-    return json.loads(CONFIG_FILE.read_text())
+    raw = CONFIG_FILE.read_text()
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise ValueError(
+            f"Config file {CONFIG_FILE} is not valid JSON ({exc}). "
+            f"Delete it and re-run: riskmanaged auth login"
+        ) from exc
 
 
 def save_config(data: dict):
@@ -27,13 +45,20 @@ def save_config(data: dict):
 
 
 def get_token() -> str | None:
-    """Get the stored API token."""
+    """Get the stored API token. Env var RISKMANAGED_TOKEN wins."""
+    env_token = os.environ.get("RISKMANAGED_TOKEN")
+    if env_token:
+        return env_token
     return load_config().get("token")
 
 
 def get_base_url() -> str:
-    """Get the stored base URL."""
-    return load_config().get("base_url", DEFAULT_BASE_URL)
+    """Get the stored base URL. Env var RISKMANAGED_URL wins."""
+    return (
+        os.environ.get("RISKMANAGED_URL")
+        or load_config().get("base_url")
+        or DEFAULT_BASE_URL
+    )
 
 
 def set_credentials(token: str, base_url: str = None):

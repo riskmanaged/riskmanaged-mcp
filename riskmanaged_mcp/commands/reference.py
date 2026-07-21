@@ -12,7 +12,7 @@ app = typer.Typer(no_args_is_help=True)
 @app.command("tickers")
 def tickers(
     search: str = typer.Option("", help="Search by name or symbol"),
-    exchange: str = typer.Option("binance", help="Exchange: binance|bittensor"),
+    exchange: str = typer.Option("binance", help="Exchange: binance"),
 ):
     """Search available tickers."""
     client = RiskManagedClient()

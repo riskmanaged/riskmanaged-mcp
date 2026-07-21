@@ -2,9 +2,11 @@
 
 import typer
 from riskmanaged_mcp.commands import (
+    agents,
     auth,
     backtest,
     bias,
+    dev,
     grids,
     indicators,
     reference,
@@ -33,6 +35,12 @@ app.add_typer(
 app.add_typer(grids.app, name="grids", help="Grid templates and grid searches")
 app.add_typer(
     reference.app, name="reference", help="Reference data: tickers, patterns, constants"
+)
+app.add_typer(
+    agents.app, name="agents", help="Agent committees + W6 surface (templates, LLM, news, macro, spend, proposals)"
+)
+app.add_typer(
+    dev.app, name="dev", help="Maintainer utilities: regenerate docs and API snapshots"
 )
 
 

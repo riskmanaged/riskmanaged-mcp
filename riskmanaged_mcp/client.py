@@ -1,4 +1,22 @@
-"""HTTP client for the RiskManaged External API"""
+"""HTTP client for the RiskManaged External API.
+
+Everything goes through `/api/external/*`. There is one client, one base URL,
+and one auth scheme.
+
+This used to hold three clients: the external one plus two pointed at
+`/api/internal/agent` and `/api/internal/community`, on the belief that the same
+bearer token authenticated all three. It did not. The internal routers
+JWT-decode the bearer, and an API token is an opaque random string, so every one
+of those ~40 calls failed against any real deployment — silently, because the
+internal routers skip auth entirely when `ENV` is `local`/`test`, which is what
+the acceptance tests run under.
+
+The W6 surface now lives at `/api/external/agent/*` and sharing at
+`/api/external/community/*`. Those routes take identity from the token, so no
+method here passes a `user_id` for the *acting* user. The only surviving
+`user_id` arguments are on the admin endpoints, where the id names the user
+being asked *about* and the caller must hold the `admins` role.
+"""
 
 import httpx
 from riskmanaged_mcp.config import get_base_url, get_token
@@ -12,7 +30,7 @@ class RiskManagedClient:
         self.base_url = (base_url or get_base_url()).rstrip("/")
         if not self.token:
             raise ValueError(
-                "No API token configured. Run: riskmanaged configure --token YOUR_TOKEN"
+                "No API token configured. Run: riskmanaged auth login"
             )
         self._client = httpx.Client(
             base_url=f"{self.base_url}/api/external",
@@ -319,3 +337,248 @@ class RiskManagedClient:
 
     def get_constants(self):
         return self._request("GET", "/reference/constants")
+
+
+    # =================================================================
+    # Agent surface — committees, templates, model routes, LLM
+    # connections, news, macro, user settings, proposals, promotion,
+    # observability, rollback. All under /api/external/agent/*.
+    #
+    # None of these take the acting user's id: the server reads it from
+    # the token. The `user_id` on the three admin methods names the user
+    # being reported *on*, and requires the `admins` role.
+    # =================================================================
+
+    # ---- Templates ----
+
+    def list_templates(self, enabled_only: bool = True):
+        return self._request(
+            "GET", "/agent/templates", params={"enabled_only": enabled_only}
+        )
+
+    def get_template(self, slug: str):
+        return self._request("GET", f"/agent/templates/{slug}")
+
+    # ---- Agent committees ----
+
+    def list_committees(self, enabled_only: bool = True):
+        return self._request(
+            "GET", "/agent/instances", params={"enabled_only": enabled_only}
+        )
+
+    def get_committee(self, instance_id: str):
+        return self._request("GET", f"/agent/instances/{instance_id}")
+
+    def clone_template(self, body: dict):
+        """Clone a template into a committee owned by the caller.
+        Body: template_slug (required), name (required), plus optional
+        binding_type / strategy_id / basket_id / autonomy_tier."""
+        return self._request("POST", "/agent/instances/from-template", json=body)
+
+    def delete_committee(self, instance_id: str):
+        return self._request("DELETE", f"/agent/instances/{instance_id}")
+
+    def trigger_committee_run(self, instance_id: str, body: dict = None):
+        return self._request(
+            "POST", f"/agent/instances/{instance_id}/trigger", json=body or {}
+        )
+
+    def get_committee_messages(
+        self, instance_id: str, since_id: int = 0, limit: int = 50,
+        direction: str = "oldest",
+    ):
+        return self._request(
+            "GET",
+            f"/agent/instances/{instance_id}/messages",
+            params={
+                "since_id": since_id,
+                "limit": limit,
+                "direction": direction,
+            },
+        )
+
+    def get_committee_track_record(self, instance_id: str):
+        return self._request(
+            "GET", f"/agent/instances/{instance_id}/track-record-summary"
+        )
+
+    def set_committee_tier(self, instance_id: str, body: dict):
+        """Body: to_tier (suggest|paper_track|auto_live), optional reason.
+        Direct, non-gated tier flip; the actor is the token's user."""
+        return self._request(
+            "POST", f"/agent/instances/{instance_id}/tier", json=body
+        )
+
+    def list_instance_runs(self, instance_id: str, limit: int = 50,
+                           strategy_id: str = ""):
+        """The last `limit` runs for an instance, with token counts and
+        estimated cost."""
+        return self._request(
+            "GET",
+            f"/agent/instances/{instance_id}/runs",
+            params={"limit": limit, "strategy_id": strategy_id},
+        )
+
+    # ---- Model routes ----
+
+    def list_model_routes(self):
+        return self._request("GET", "/agent/model-routes")
+
+    def upsert_model_route(self, body: dict):
+        """Body: task_class, provider, model."""
+        return self._request("POST", "/agent/model-routes", json=body)
+
+    def delete_model_route(self, task_class: str):
+        return self._request("DELETE", f"/agent/model-routes/{task_class}")
+
+    # ---- LLM connections ----
+
+    def list_llm_connections(self):
+        return self._request("GET", "/agent/llm-connections")
+
+    def create_llm_connection(self, body: dict):
+        """Body: provider, label, api_key."""
+        return self._request("POST", "/agent/llm-connections/direct", json=body)
+
+    def test_llm_connection(self, connection_id: str):
+        return self._request(
+            "POST", f"/agent/llm-connections/{connection_id}/test", json={}
+        )
+
+    def reveal_llm_connection_key(self, connection_id: str):
+        return self._request(
+            "POST", f"/agent/llm-connections/{connection_id}/reveal", json={}
+        )
+
+    def update_llm_connection(self, connection_id: str, body: dict):
+        return self._request(
+            "PATCH", f"/agent/llm-connections/{connection_id}", json=body
+        )
+
+    def delete_llm_connection(self, connection_id: str):
+        return self._request("DELETE", f"/agent/llm-connections/{connection_id}")
+
+    # ---- News ----
+
+    def list_news_articles(self, **params):
+        return self._request("GET", "/agent/news/articles", params=params)
+
+    def get_news_article(self, article_id: str):
+        return self._request("GET", f"/agent/news/articles/{article_id}")
+
+    def list_news_sources(self):
+        return self._request("GET", "/agent/news/sources")
+
+    # ---- Macro ----
+
+    def list_macro_events(self, **params):
+        return self._request("GET", "/agent/macro/events", params=params)
+
+    def get_macro_event(self, event_id: str):
+        return self._request("GET", f"/agent/macro/events/{event_id}")
+
+    # ---- User settings (daily LLM spend cap) ----
+
+    def get_user_settings(self):
+        return self._request("GET", "/agent/user-settings")
+
+    def set_daily_token_cap(self, cap):
+        """cap is an int (>= 0) or None to clear enforcement."""
+        return self._request(
+            "PUT", "/agent/user-settings", json={"daily_token_cap": cap}
+        )
+
+    # ---- Proposals + promotion ----
+
+    def list_pending_proposals(self, instance_id: str = ""):
+        """Pending proposals for one committee, or across all of the
+        caller's committees when `instance_id` is omitted."""
+        return self._request(
+            "GET", "/agent/proposals/pending",
+            params={"instance_id": instance_id},
+        )
+
+    def get_proposal(self, proposal_id: str):
+        return self._request("GET", f"/agent/proposals/{proposal_id}")
+
+    def approve_proposal(self, proposal_id: str, body: dict = None):
+        return self._request(
+            "POST", f"/agent/proposals/{proposal_id}/approve", json=body or {}
+        )
+
+    def reject_proposal(self, proposal_id: str, body: dict = None):
+        """Body may carry a `reason`."""
+        return self._request(
+            "POST", f"/agent/proposals/{proposal_id}/reject", json=body or {}
+        )
+
+    def get_committee_promotion_status(self, instance_id: str,
+                                       to_tier: str = "auto_live"):
+        return self._request(
+            "GET",
+            f"/agent/instances/{instance_id}/promotion-status",
+            params={"to_tier": to_tier},
+        )
+
+    def get_committee_promotion_events(self, instance_id: str, limit: int = 20):
+        return self._request(
+            "GET",
+            f"/agent/instances/{instance_id}/promotion-events",
+            params={"limit": limit},
+        )
+
+    # ---- Rollback (tier flip via the audit log) ----
+
+    def list_rollback_candidates(self, instance_id: str, limit: int = 20):
+        """Recent promotion events with a `can_rollback` flag. Only the
+        most recent event for an instance is rollbackable."""
+        return self._request(
+            "GET",
+            f"/agent/instances/{instance_id}/rollback-candidates",
+            params={"limit": limit},
+        )
+
+    def rollback_instance(self, instance_id: str, event_id: str):
+        """Roll the instance's autonomy_tier back to its value before
+        `event_id`. 400 `not_most_recent_event` if a later event exists."""
+        return self._request(
+            "POST",
+            f"/agent/instances/{instance_id}/rollback",
+            json={"event_id": event_id},
+        )
+
+    # ---- Admin observability (requires the `admins` role) ----
+
+    def admin_per_user_spend(self, user_id: str):
+        """Per-user LLM spend for today UTC."""
+        return self._request(
+            "GET", "/agent/admin/per-user-spend", params={"user_id": user_id}
+        )
+
+    def admin_per_user_spend_history(self, user_id: str, days: int = 30):
+        """Per-user daily spend for the last `days` days, oldest first."""
+        return self._request(
+            "GET",
+            "/agent/admin/per-user-spend/history",
+            params={"user_id": user_id, "days": days},
+        )
+
+    def admin_platform_spend_today(self):
+        """Platform-wide spend for today UTC."""
+        return self._request("GET", "/agent/admin/platform-spend-today")
+
+    # ---- Community ----
+
+    def share_strategy(self, strategy_id: str, body: dict = None):
+        """Share a strategy to the community. Body: message,
+        subscription_token_cost, published_mapping_id,
+        set_published_mapping.
+
+        `published_mapping_id` names the venue whose forward record is
+        published — the track record the community judges the strategy
+        on. `set_published_mapping` distinguishes "leave it alone" from
+        "clear it" on a re-share.
+        """
+        return self._request(
+            "POST", f"/community/share/{strategy_id}", json=body or {}
+        )
