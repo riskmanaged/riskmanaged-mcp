@@ -304,6 +304,19 @@ class RiskManagedClient:
     def get_grid(self, grid_id: str):
         return self._request("GET", f"/grids/{grid_id}")
 
+    def analyze_grid(self, grid_id: str):
+        return self._request("POST", f"/grids/{grid_id}/analyze")
+
+    def grid_suggestions(self, grid_id: str):
+        return self._request("GET", f"/grids/{grid_id}/suggestions")
+
+    def refine_grid(self, grid_id: str, kind: str, template_data: dict = None):
+        return self._request(
+            "POST",
+            f"/grids/{grid_id}/refine",
+            json={"kind": kind, "template_data": template_data},
+        )
+
     def archive_grid(self, grid_id: str):
         return self._request("POST", f"/grids/{grid_id}/archive")
 
@@ -340,9 +353,10 @@ class RiskManagedClient:
 
 
     # =================================================================
-    # Agent surface — committees, templates, model routes, LLM
-    # connections, news, macro, user settings, proposals, promotion,
-    # observability, rollback. All under /api/external/agent/*.
+    # Agent surface — committees, templates, cadence, covered markets,
+    # indicator readings, the decision line, model routes, LLM connections,
+    # news, macro, user settings, observability. All under
+    # /api/external/agent/*.
     #
     # None of these take the acting user's id: the server reads it from
     # the token. The `user_id` on the three admin methods names the user
@@ -378,11 +392,6 @@ class RiskManagedClient:
     def delete_committee(self, instance_id: str):
         return self._request("DELETE", f"/agent/instances/{instance_id}")
 
-    def trigger_committee_run(self, instance_id: str, body: dict = None):
-        return self._request(
-            "POST", f"/agent/instances/{instance_id}/trigger", json=body or {}
-        )
-
     def get_committee_messages(
         self, instance_id: str, since_id: int = 0, limit: int = 50,
         direction: str = "oldest",
@@ -397,17 +406,7 @@ class RiskManagedClient:
             },
         )
 
-    def get_committee_track_record(self, instance_id: str):
-        return self._request(
-            "GET", f"/agent/instances/{instance_id}/track-record-summary"
-        )
 
-    def set_committee_tier(self, instance_id: str, body: dict):
-        """Body: to_tier (suggest|paper_track|auto_live), optional reason.
-        Direct, non-gated tier flip; the actor is the token's user."""
-        return self._request(
-            "POST", f"/agent/instances/{instance_id}/tier", json=body
-        )
 
     def list_instance_runs(self, instance_id: str, limit: int = 50,
                            strategy_id: str = ""):
@@ -488,63 +487,70 @@ class RiskManagedClient:
             "PUT", "/agent/user-settings", json={"daily_token_cap": cap}
         )
 
-    # ---- Proposals + promotion ----
+    # ---- Cadence, covered markets and readings ----
 
-    def list_pending_proposals(self, instance_id: str = ""):
-        """Pending proposals for one committee, or across all of the
-        caller's committees when `instance_id` is omitted."""
+    def get_committee_cadence_board(self, instance_id: str):
+        """One row per covered market: current call, standing, freshness."""
+        return self._request("GET", f"/agent/instances/{instance_id}/decision-board")
+
+    def set_committee_cadence(self, instance_id: str, body: dict):
+        """Update cadence knobs: cadence_enabled, cadence_interval_seconds
+        (30-minute floor), score_deadband_pct, context_bars."""
         return self._request(
-            "GET", "/agent/proposals/pending",
-            params={"instance_id": instance_id},
+            "PATCH", f"/agent/instances/{instance_id}/cadence", json=body
         )
 
-    def get_proposal(self, proposal_id: str):
-        return self._request("GET", f"/agent/proposals/{proposal_id}")
+    def list_committee_markets(self, instance_id: str):
+        return self._request("GET", f"/agent/instances/{instance_id}/tickers")
 
-    def approve_proposal(self, proposal_id: str, body: dict = None):
+    def add_committee_market(self, instance_id: str, symbol: str):
         return self._request(
-            "POST", f"/agent/proposals/{proposal_id}/approve", json=body or {}
+            "POST", f"/agent/instances/{instance_id}/tickers", json={"symbol": symbol}
         )
 
-    def reject_proposal(self, proposal_id: str, body: dict = None):
-        """Body may carry a `reason`."""
+    def set_committee_market_enabled(
+        self, instance_id: str, symbol: str, enabled: bool
+    ):
         return self._request(
-            "POST", f"/agent/proposals/{proposal_id}/reject", json=body or {}
+            "PATCH",
+            f"/agent/instances/{instance_id}/tickers/{symbol}",
+            json={"enabled": enabled},
         )
 
-    def get_committee_promotion_status(self, instance_id: str,
-                                       to_tier: str = "auto_live"):
+    def remove_committee_market(self, instance_id: str, symbol: str):
         return self._request(
-            "GET",
-            f"/agent/instances/{instance_id}/promotion-status",
-            params={"to_tier": to_tier},
+            "DELETE", f"/agent/instances/{instance_id}/tickers/{symbol}"
         )
 
-    def get_committee_promotion_events(self, instance_id: str, limit: int = 20):
+    def get_committee_readings(self, instance_id: str):
+        return self._request("GET", f"/agent/instances/{instance_id}/indicators")
+
+    def set_committee_readings(self, instance_id: str, indicators: dict):
+        """Replace the whole reading map, in the same {name: {type, config}}
+        shape a strategy stores its indicators in."""
         return self._request(
-            "GET",
-            f"/agent/instances/{instance_id}/promotion-events",
-            params={"limit": limit},
+            "PUT",
+            f"/agent/instances/{instance_id}/indicators",
+            json={"indicators": indicators},
         )
 
-    # ---- Rollback (tier flip via the audit log) ----
+    # ---- The decision line ----
 
-    def list_rollback_candidates(self, instance_id: str, limit: int = 20):
-        """Recent promotion events with a `can_rollback` flag. Only the
-        most recent event for an instance is rollbackable."""
+    def list_committee_decisions(
+        self, instance_id: str, symbol: str = "", limit: int = 50
+    ):
+        params = {"limit": limit}
+        if symbol:
+            params["symbol"] = symbol
         return self._request(
-            "GET",
-            f"/agent/instances/{instance_id}/rollback-candidates",
-            params={"limit": limit},
+            "GET", f"/agent/instances/{instance_id}/decisions", params=params
         )
 
-    def rollback_instance(self, instance_id: str, event_id: str):
-        """Roll the instance's autonomy_tier back to its value before
-        `event_id`. 400 `not_most_recent_event` if a later event exists."""
+    def get_committee_decision_summary(self, instance_id: str, symbol: str = ""):
+        """Standing: cumulative points, recent form, accuracy, streak."""
+        params = {"symbol": symbol} if symbol else None
         return self._request(
-            "POST",
-            f"/agent/instances/{instance_id}/rollback",
-            json={"event_id": event_id},
+            "GET", f"/agent/instances/{instance_id}/decision-summary", params=params
         )
 
     # ---- Admin observability (requires the `admins` role) ----

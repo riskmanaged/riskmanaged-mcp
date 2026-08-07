@@ -2,16 +2,15 @@
 
 The 8 logical groups exposed here mirror the MCP tool surface:
 - `templates`         list / get the 3 day-1 hedge-fund templates (W6.1)
-- `committees`        list / get / clone / trigger / messages / track-record / set-tier (W6.1)
+- `committees`        list / get / clone / messages / markets / cadence /
+                      readings / decisions
 - `routes`            list / upsert / delete per-user model routes (W3.5)
 - `llm`               list / create / test / reveal / update / delete LLM connections (W3.7)
 - `news`              list / get articles + list sources (W3.1)
 - `macro`             list / get events (W3.2)
 - `spend`             get / set your daily token cap (W6.3)
-- `proposals`         list pending / get / approve / reject + committee promotion status / events (W4.3)
 - `runs`              list recent committee runs with token counts
 - `admin-spend`       platform / per-user LLM spend (requires the `admins` role)
-- `rollback`          tier rollback via the audit log
 
 Each command is a thin Typer wrapper over the corresponding
 `RiskManagedClient` method, which hits /api/external/agent/*.
@@ -28,7 +27,7 @@ from rich import print as rprint
 from rich.table import Table
 from riskmanaged_mcp.client import RiskManagedClient
 
-app = typer.Typer(no_args_is_help=True, help="Agent committees + W6 surface")
+app = typer.Typer(no_args_is_help=True, help="Squads + W6 surface")
 
 
 def _client():
@@ -64,7 +63,7 @@ def get_template(slug: str = typer.Argument(...)):
 
 
 # ---- Committees (W6.1) ----
-committees_app = typer.Typer(help="Agent committees (W6.1)")
+committees_app = typer.Typer(help="Squads — config, markets, readings, decisions")
 app.add_typer(committees_app, name="committees")
 
 
@@ -72,13 +71,13 @@ app.add_typer(committees_app, name="committees")
 def list_committees(
     enabled_only: bool = typer.Option(True, "--enabled-only/--all"),
 ):
-    """List your committees."""
+    """List your squads."""
     rprint(_client().list_committees(enabled_only=enabled_only))
 
 
 @committees_app.command("get")
 def get_committee(instance_id: str = typer.Argument(...)):
-    """Get one committee by id."""
+    """Get one squad by id."""
     rprint(_client().get_committee(instance_id))
 
 
@@ -90,7 +89,7 @@ def clone_template(
     binding_type: str = typer.Option("strategy", "--binding-type"),
     autonomy_tier: str = typer.Option("suggest", "--tier"),
 ):
-    """Clone a day-1 template into a working committee."""
+    """Clone a day-1 template into a working squad."""
     body = {
         "template_slug": template_slug,
         "name": name,
@@ -101,44 +100,18 @@ def clone_template(
     rprint(_client().clone_template(body))
 
 
-@committees_app.command("trigger")
-def trigger_committee(
-    instance_id: str = typer.Argument(...),
-    symbol: str = typer.Option("BTCUSDT", "--symbol"),
-):
-    """Run one deliberation cycle. Blocks until {awaiting_user, completed}."""
-    rprint(_client().trigger_committee_run(instance_id, {"symbol": symbol}))
-
-
 @committees_app.command("messages")
 def committee_messages(
     instance_id: str = typer.Argument(...),
     since_id: int = typer.Option(0, "--since"),
     limit: int = typer.Option(200, "--limit"),
 ):
-    """Replay the deliberation message bus for a committee."""
+    """Replay the deliberation message bus for a squad."""
     rprint(_client().get_committee_messages(instance_id, since_id, limit))
 
 
-@committees_app.command("track-record")
-def committee_track_record(instance_id: str = typer.Argument(...)):
-    """Get the cheap track-record summary for a committee."""
-    rprint(_client().get_committee_track_record(instance_id))
 
 
-@committees_app.command("set-tier")
-def set_committee_tier(
-    instance_id: str = typer.Argument(...),
-    to_tier: str = typer.Option(..., "--to-tier"),
-    reason: str = typer.Option("", "--reason"),
-):
-    """Direct, non-gated tier flip (bypasses evaluate_promotion)."""
-    rprint(
-        _client().set_committee_tier(
-            instance_id,
-            {"to_tier": to_tier, "reason": reason or None},
-        )
-    )
 
 
 # ---- Model routes (W3.5) ----
@@ -324,63 +297,96 @@ def set_spend_cap(
     rprint(_client().set_daily_token_cap(cap if cap >= 0 else None))
 
 
-# ---- Proposals (W4.3) ----
-proposals_app = typer.Typer(help="Proposals + committee promotion (W4.3)")
-app.add_typer(proposals_app, name="proposals")
+# ---- Cadence, markets, readings and decisions ----
 
 
-@proposals_app.command("list")
-def list_proposals(
-    instance_id: str = typer.Option("", "--instance-id"),
-):
-    """List trade proposals awaiting approval, for one committee
-    or across all of yours."""
-    rprint(_client().list_pending_proposals(instance_id))
+@committees_app.command("board")
+def committee_board(instance_id: str = typer.Argument(...)):
+    """One row per covered market: current call, standing, next wake."""
+    rprint(_client().get_committee_cadence_board(instance_id))
 
 
-@proposals_app.command("get")
-def get_proposal(proposal_id: str = typer.Argument(...)):
-    """Get one proposal by id."""
-    rprint(_client().get_proposal(proposal_id))
-
-
-@proposals_app.command("approve")
-def approve_proposal(proposal_id: str = typer.Argument(...)):
-    """Approve a pending proposal."""
-    rprint(_client().approve_proposal(proposal_id))
-
-
-@proposals_app.command("reject")
-def reject_proposal(
-    proposal_id: str = typer.Argument(...),
-    reason: str = typer.Option("", "--reason"),
-):
-    """Reject a pending proposal with an optional reason."""
-    rprint(
-        _client().reject_proposal(
-            proposal_id, {"reason": reason}
-        )
-    )
-
-
-@proposals_app.command("promotion-status")
-def committee_promotion_status(
+@committees_app.command("decisions")
+def committee_decisions(
     instance_id: str = typer.Argument(...),
-    to_tier: str = typer.Option("auto_live", "--to-tier"),
+    symbol: str = typer.Option("", "--symbol"),
+    limit: int = typer.Option(50, "--limit"),
 ):
-    """Get the eligibility status of a committee for promotion."""
-    rprint(
-        _client().get_committee_promotion_status(instance_id, to_tier=to_tier)
-    )
+    """A squad's recent decisions, newest first. The newest is unscored —
+    it is graded when the next one supplies a closing price."""
+    rprint(_client().list_committee_decisions(instance_id, symbol=symbol, limit=limit))
 
 
-@proposals_app.command("promotion-events")
-def committee_promotion_events(
+@committees_app.command("standing")
+def committee_standing(
     instance_id: str = typer.Argument(...),
-    limit: int = typer.Option(5, "--limit"),
+    symbol: str = typer.Option("", "--symbol"),
 ):
-    """List recent promotion events for a committee (audit log)."""
-    rprint(_client().get_committee_promotion_events(instance_id, limit=limit))
+    """Cumulative points, recent form, accuracy and streak."""
+    rprint(_client().get_committee_decision_summary(instance_id, symbol=symbol))
+
+
+@committees_app.command("cadence")
+def committee_cadence(
+    instance_id: str = typer.Argument(...),
+    enabled: bool = typer.Option(None, "--enabled/--disabled"),
+    interval_seconds: int = typer.Option(None, "--interval-seconds"),
+    context_bars: int = typer.Option(None, "--context-bars"),
+    deadband_pct: float = typer.Option(None, "--deadband-pct"),
+):
+    """Configure how a squad wakes. Interval has a 30-minute floor."""
+    body = {}
+    if enabled is not None:
+        body["cadence_enabled"] = enabled
+    if interval_seconds is not None:
+        body["cadence_interval_seconds"] = interval_seconds
+    if context_bars is not None:
+        body["context_bars"] = context_bars
+    if deadband_pct is not None:
+        body["score_deadband_pct"] = deadband_pct
+    rprint(_client().set_committee_cadence(instance_id, body))
+
+
+@committees_app.command("markets")
+def committee_markets(instance_id: str = typer.Argument(...)):
+    """The markets a squad covers."""
+    rprint(_client().list_committee_markets(instance_id))
+
+
+@committees_app.command("add-market")
+def committee_add_market(
+    instance_id: str = typer.Argument(...),
+    symbol: str = typer.Argument(..., help="e.g. BTCUSDT"),
+):
+    """Cover a market. Idempotent — re-adding re-enables a paused one."""
+    rprint(_client().add_committee_market(instance_id, symbol))
+
+
+@committees_app.command("remove-market")
+def committee_remove_market(
+    instance_id: str = typer.Argument(...),
+    symbol: str = typer.Argument(...),
+):
+    """Stop covering a market. Its past decisions are kept."""
+    rprint(_client().remove_committee_market(instance_id, symbol))
+
+
+@committees_app.command("readings")
+def committee_readings(instance_id: str = typer.Argument(...)):
+    """The indicator readings fed to the specialists."""
+    rprint(_client().get_committee_readings(instance_id))
+
+
+@committees_app.command("set-readings")
+def committee_set_readings(
+    instance_id: str = typer.Argument(...),
+    indicators: str = typer.Option(..., "--indicators", help="JSON map"),
+):
+    """Replace the whole reading map. Omit `ticker` — a reading is computed
+    per covered market."""
+    import json as _json
+
+    rprint(_client().set_committee_readings(instance_id, _json.loads(indicators)))
 
 
 # ---- W6.5 — Observability (runs + spend) ----
@@ -433,29 +439,8 @@ app.add_typer(admin_spend_app, name="admin-spend")
 rollback_app = typer.Typer(help="Tier rollback via the audit log (W6.5)")
 
 
-@rollback_app.command("list")
-def list_rollback_candidates(
-    instance_id: str = typer.Argument(...),
-    limit: int = typer.Option(20, "--limit"),
-):
-    """List the last N promotion events for the instance, with
-    `can_rollback` flags. Only the most recent event can be
-    rolled back."""
-    rprint(_client().list_rollback_candidates(instance_id, limit=limit))
 
 
-@rollback_app.command("perform")
-def rollback_instance(
-    instance_id: str = typer.Argument(...),
-    event_id: str = typer.Option(..., "--event-id"),
-):
-    """Roll the instance's autonomy_tier back to the value it held
-    BEFORE the named event was applied. Only the most recent event
-    is rollbackable. Writes a new AgentPromotionEvent with
-    trigger='rollback'."""
-    rprint(
-        _client().rollback_instance(instance_id, event_id)
-    )
 
 
 app.add_typer(rollback_app, name="rollback")

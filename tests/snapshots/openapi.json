@@ -247,6 +247,14 @@
             ],
             "title": "Max Drawdown"
           },
+          "my_venues": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/MyVenue"
+            },
+            "title": "My Venues",
+            "type": "array"
+          },
           "name": {
             "title": "Name",
             "type": "string"
@@ -460,6 +468,31 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "MyVenue": {
+        "description": "One of the *viewer's own* venues on a shared strategy.\n\nTwo fields, because that is all the card renders. Deliberately not the full\nmapping shape from `/exchange/mappings`: a listing must never carry another\nuser's venue, and the less it carries the less there is to leak.",
+        "properties": {
+          "exchange_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchange Name"
+          },
+          "mode": {
+            "title": "Mode",
+            "type": "string"
+          }
+        },
+        "required": [
+          "mode"
+        ],
+        "title": "MyVenue",
+        "type": "object"
+      },
       "PublishedRecord": {
         "description": "Forward performance of the venue a shared strategy publishes.\n\nDeliberately has no Sharpe or max drawdown: those need a returns series, and\na figure synthesised from a handful of trades would sit next to the\nbacktest's years of data looking equally authoritative.",
         "properties": {
@@ -548,7 +581,25 @@
           "stop_loss": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/StopLossTrailing"
+                "discriminator": {
+                  "mapping": {
+                    "atr": "#/components/schemas/StopLossAtr",
+                    "simple": "#/components/schemas/StopLossSimple",
+                    "trailing": "#/components/schemas/StopLossTrailing"
+                  },
+                  "propertyName": "sl_type"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/StopLossSimple"
+                  },
+                  {
+                    "$ref": "#/components/schemas/StopLossAtr"
+                  },
+                  {
+                    "$ref": "#/components/schemas/StopLossTrailing"
+                  }
+                ]
               },
               {
                 "type": "null"
@@ -557,12 +608,27 @@
             "default": {
               "sl_type": "trailing",
               "trailing_pct": 0.005
-            }
+            },
+            "title": "Stop Loss"
           },
           "take_profit": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/TakeProfitSpread"
+                "discriminator": {
+                  "mapping": {
+                    "atr": "#/components/schemas/TakeProfitAtr",
+                    "spread": "#/components/schemas/TakeProfitSpread"
+                  },
+                  "propertyName": "tp_type"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/TakeProfitSpread"
+                  },
+                  {
+                    "$ref": "#/components/schemas/TakeProfitAtr"
+                  }
+                ]
               },
               {
                 "type": "null"
@@ -578,7 +644,8 @@
                 }
               ],
               "tp_type": "spread"
-            }
+            },
+            "title": "Take Profit"
           }
         },
         "title": "RiskManagement",
@@ -628,9 +695,49 @@
         "title": "ShareStrategyInput",
         "type": "object"
       },
+      "StopLossAtr": {
+        "properties": {
+          "atr_line": {
+            "default": "ATR_bt_usdc.atr_sma",
+            "title": "Atr Line",
+            "type": "string"
+          },
+          "atr_multiplier": {
+            "default": 2.0,
+            "title": "Atr Multiplier",
+            "type": "number"
+          },
+          "sl_type": {
+            "const": "atr",
+            "default": "atr",
+            "title": "Sl Type",
+            "type": "string"
+          }
+        },
+        "title": "StopLossAtr",
+        "type": "object"
+      },
+      "StopLossSimple": {
+        "properties": {
+          "sl_type": {
+            "const": "simple",
+            "default": "simple",
+            "title": "Sl Type",
+            "type": "string"
+          },
+          "stoploss_pct": {
+            "default": -0.05,
+            "title": "Stoploss Pct",
+            "type": "number"
+          }
+        },
+        "title": "StopLossSimple",
+        "type": "object"
+      },
       "StopLossTrailing": {
         "properties": {
           "sl_type": {
+            "const": "trailing",
             "default": "trailing",
             "title": "Sl Type",
             "type": "string"
@@ -642,6 +749,28 @@
           }
         },
         "title": "StopLossTrailing",
+        "type": "object"
+      },
+      "TakeProfitAtr": {
+        "properties": {
+          "atr_line": {
+            "default": "ATR_bt_usdc.atr_sma",
+            "title": "Atr Line",
+            "type": "string"
+          },
+          "atr_multiplier": {
+            "default": 4.0,
+            "title": "Atr Multiplier",
+            "type": "number"
+          },
+          "tp_type": {
+            "const": "atr",
+            "default": "atr",
+            "title": "Tp Type",
+            "type": "string"
+          }
+        },
+        "title": "TakeProfitAtr",
         "type": "object"
       },
       "TakeProfitOrder": {
@@ -667,6 +796,7 @@
             "type": "array"
           },
           "tp_type": {
+            "const": "spread",
             "default": "spread",
             "title": "Tp Type",
             "type": "string"
@@ -1137,6 +1267,310 @@
         ]
       }
     },
+    "/agent/instances/{instance_id}/cadence": {
+      "patch": {
+        "description": "Update the cadence knobs.\n\nBody: `cadence_enabled`, `cadence_interval_seconds` (30-minute floor),\n`score_deadband_pct`, `context_bars`, `reflection_enabled`.",
+        "operationId": "update_committee_cadence_agent_instances__instance_id__cadence_patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Committee Cadence",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/instances/{instance_id}/decision-board": {
+      "get": {
+        "description": "One row per covered market: current call, standing and freshness.",
+        "operationId": "get_committee_decision_board_agent_instances__instance_id__decision_board_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Committee Decision Board",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/instances/{instance_id}/decision-summary": {
+      "get": {
+        "description": "Standing: cumulative points, recent form, accuracy, streak, current call.",
+        "operationId": "get_committee_decision_summary_agent_instances__instance_id__decision_summary_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Scope to one market",
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "default": "",
+              "description": "Scope to one market",
+              "title": "Symbol",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Committee Decision Summary",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/instances/{instance_id}/decisions": {
+      "get": {
+        "description": "The committee's recent decisions, newest first.\n\nEach carries the price it was stamped with and \u2014 once the next decision\nsupplies a closing price \u2014 how it scored.",
+        "operationId": "list_committee_decisions_agent_instances__instance_id__decisions_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter to one market",
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "default": "",
+              "description": "Filter to one market",
+              "title": "Symbol",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Committee Decisions",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/instances/{instance_id}/indicators": {
+      "get": {
+        "description": "The indicator readings fed to the specialists, in the same\n`{name: {type, config}}` shape a strategy stores its indicators in.",
+        "operationId": "get_committee_readings_agent_instances__instance_id__indicators_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Committee Readings",
+        "tags": [
+          "Agents"
+        ]
+      },
+      "put": {
+        "description": "Replace the whole reading map. Body: `indicators`.\n\nWhole-map replacement mirrors how a strategy saves its indicators. A\nreading omits `ticker` \u2014 it is computed per covered market.",
+        "operationId": "set_committee_readings_agent_instances__instance_id__indicators_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Committee Readings",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
     "/agent/instances/{instance_id}/messages": {
       "get": {
         "description": "Read the committee's deliberation transcript.",
@@ -1212,222 +1646,6 @@
         ]
       }
     },
-    "/agent/instances/{instance_id}/promotion-events": {
-      "get": {
-        "description": "The committee's promotion/demotion audit trail, newest first.",
-        "operationId": "get_promotion_events_agent_instances__instance_id__promotion_events_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instance_id",
-            "required": true,
-            "schema": {
-              "title": "Instance Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "default": 20,
-              "maximum": 200,
-              "minimum": 1,
-              "title": "Limit",
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Get Promotion Events",
-        "tags": [
-          "Agents"
-        ]
-      }
-    },
-    "/agent/instances/{instance_id}/promotion-status": {
-      "get": {
-        "description": "Whether the committee is eligible for promotion \u2014 `{eligible, missing}`.",
-        "operationId": "get_promotion_status_agent_instances__instance_id__promotion_status_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instance_id",
-            "required": true,
-            "schema": {
-              "title": "Instance Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "to_tier",
-            "required": false,
-            "schema": {
-              "default": "auto_live",
-              "title": "To Tier",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Get Promotion Status",
-        "tags": [
-          "Agents"
-        ]
-      }
-    },
-    "/agent/instances/{instance_id}/rollback": {
-      "post": {
-        "description": "Roll the committee's tier back to its value before `event_id`.\n\nOnly the most recent event is rollbackable (400 `not_most_recent_event`).",
-        "operationId": "rollback_instance_agent_instances__instance_id__rollback_post",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instance_id",
-            "required": true,
-            "schema": {
-              "title": "Instance Id",
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "additionalProperties": true,
-                    "type": "object"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Rollback Instance",
-        "tags": [
-          "Agents"
-        ]
-      }
-    },
-    "/agent/instances/{instance_id}/rollback-candidates": {
-      "get": {
-        "description": "Recent promotion events with a `can_rollback` flag.",
-        "operationId": "list_rollback_candidates_agent_instances__instance_id__rollback_candidates_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instance_id",
-            "required": true,
-            "schema": {
-              "title": "Instance Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "default": 20,
-              "maximum": 200,
-              "minimum": 1,
-              "title": "Limit",
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "List Rollback Candidates",
-        "tags": [
-          "Agents"
-        ]
-      }
-    },
     "/agent/instances/{instance_id}/runs": {
       "get": {
         "description": "List recent runs for the committee, with token counts.",
@@ -1491,69 +1709,10 @@
         ]
       }
     },
-    "/agent/instances/{instance_id}/tier": {
-      "post": {
-        "description": "Flip the committee's autonomy tier.\n\nBody: `to_tier` (`suggest` | `paper_track` | `auto_live`), optional\n`reason`. The actor recorded in the audit row is always the token's user.",
-        "operationId": "set_committee_tier_agent_instances__instance_id__tier_post",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instance_id",
-            "required": true,
-            "schema": {
-              "title": "Instance Id",
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "additionalProperties": true,
-                    "type": "object"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Set Committee Tier",
-        "tags": [
-          "Agents"
-        ]
-      }
-    },
-    "/agent/instances/{instance_id}/track-record-summary": {
+    "/agent/instances/{instance_id}/tickers": {
       "get": {
-        "description": "Headline track-record metrics for the committee.",
-        "operationId": "get_committee_track_record_agent_instances__instance_id__track_record_summary_get",
+        "description": "The markets this committee covers.",
+        "operationId": "list_committee_markets_agent_instances__instance_id__tickers_get",
         "parameters": [
           {
             "in": "path",
@@ -1585,16 +1744,14 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Get Committee Track Record",
+        "summary": "List Committee Markets",
         "tags": [
           "Agents"
         ]
-      }
-    },
-    "/agent/instances/{instance_id}/trigger": {
+      },
       "post": {
-        "description": "Run one deliberation cycle for the caller's committee.",
-        "operationId": "trigger_committee_run_agent_instances__instance_id__trigger_post",
+        "description": "Cover a market. Idempotent \u2014 re-adding re-enables. Body: `symbol`.",
+        "operationId": "add_committee_market_agent_instances__instance_id__tickers_post",
         "parameters": [
           {
             "in": "path",
@@ -1610,19 +1767,13 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "additionalProperties": true,
-                    "type": "object"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -1644,7 +1795,117 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Trigger Committee Run",
+        "summary": "Add Committee Market",
+        "tags": [
+          "Agents"
+        ]
+      }
+    },
+    "/agent/instances/{instance_id}/tickers/{symbol}": {
+      "delete": {
+        "description": "Stop covering a market. Its past decisions are kept.",
+        "operationId": "remove_committee_market_agent_instances__instance_id__tickers__symbol__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "symbol",
+            "required": true,
+            "schema": {
+              "title": "Symbol",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Remove Committee Market",
+        "tags": [
+          "Agents"
+        ]
+      },
+      "patch": {
+        "description": "Pause or resume one market without losing its decision history.",
+        "operationId": "set_committee_market_enabled_agent_instances__instance_id__tickers__symbol__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "title": "Instance Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "symbol",
+            "required": true,
+            "schema": {
+              "title": "Symbol",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Committee Market Enabled",
         "tags": [
           "Agents"
         ]
@@ -2172,7 +2433,7 @@
     },
     "/agent/news/articles": {
       "get": {
-        "description": "Recent news articles, with optional symbol/sentiment/urgency filters.\n\nOnly articles that have been sentiment-tagged carry `sentiment` and\n`urgency`; the same tagged rows are what the `NewsSentiment` indicator\nreads, so this is the way to check an indicator will have data before\nbuilding a strategy on it.",
+        "description": "Recent news articles, with optional symbol/sentiment/urgency filters.\n\nOnly articles that have been sentiment-tagged carry `sentiment` and\n`urgency`; the same tagged rows are what the `NewsSentiment` indicator\nreads, so this is the way to check an indicator will have data before\nbuilding a strategy on it.\n\n`sort=impact` ranks by urgency, impact scope and tagger confidence\ninstead of publication time.",
         "operationId": "list_news_articles_agent_news_articles_get",
         "parameters": [
           {
@@ -2279,6 +2540,18 @@
               "description": "low | medium | high",
               "title": "Urgency"
             }
+          },
+          {
+            "description": "recent | impact",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "default": "recent",
+              "description": "recent | impact",
+              "title": "Sort",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -2363,207 +2636,6 @@
           }
         },
         "summary": "List News Sources",
-        "tags": [
-          "Agents"
-        ]
-      }
-    },
-    "/agent/proposals/pending": {
-      "get": {
-        "description": "Pending proposals awaiting approval.\n\nScoped to one committee with `instance_id`, otherwise across every\ncommittee the caller owns. The internal route requires `instance_id`,\nwhich is why the MCP's `list_pending_proposals(user_id=\u2026)` always 422'd \u2014\nit sent the one parameter the route did not accept.",
-        "operationId": "list_pending_proposals_agent_proposals_pending_get",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "instance_id",
-            "required": false,
-            "schema": {
-              "default": "",
-              "title": "Instance Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "List Pending Proposals",
-        "tags": [
-          "Agents"
-        ]
-      }
-    },
-    "/agent/proposals/{proposal_id}": {
-      "get": {
-        "description": "Fetch one proposal.",
-        "operationId": "get_proposal_agent_proposals__proposal_id__get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "proposal_id",
-            "required": true,
-            "schema": {
-              "title": "Proposal Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Get Proposal",
-        "tags": [
-          "Agents"
-        ]
-      }
-    },
-    "/agent/proposals/{proposal_id}/approve": {
-      "post": {
-        "description": "Approve a proposal, filling it against the mapped strategy.",
-        "operationId": "approve_proposal_agent_proposals__proposal_id__approve_post",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "proposal_id",
-            "required": true,
-            "schema": {
-              "title": "Proposal Id",
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "additionalProperties": true,
-                    "type": "object"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Approve Proposal",
-        "tags": [
-          "Agents"
-        ]
-      }
-    },
-    "/agent/proposals/{proposal_id}/reject": {
-      "post": {
-        "description": "Reject a proposal. Body may carry a `reason`.",
-        "operationId": "reject_proposal_agent_proposals__proposal_id__reject_post",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "proposal_id",
-            "required": true,
-            "schema": {
-              "title": "Proposal Id",
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "additionalProperties": true,
-                    "type": "object"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Reject Proposal",
         "tags": [
           "Agents"
         ]
@@ -3087,6 +3159,47 @@
           }
         },
         "summary": "Get Grid",
+        "tags": [
+          "Grids"
+        ]
+      }
+    },
+    "/grids/{grid_id}/analyze": {
+      "post": {
+        "description": "(Re)compute the cluster/robustness analysis for a grid (backfill).",
+        "operationId": "analyze_grid_grids__grid_id__analyze_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "grid_id",
+            "required": true,
+            "schema": {
+              "title": "Grid Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Analyze Grid",
         "tags": [
           "Grids"
         ]

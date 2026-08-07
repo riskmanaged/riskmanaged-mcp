@@ -211,6 +211,9 @@ CASES: list[tuple[str, dict, str, str]] = [
     ("create_grid", {"template_id": T}, "POST", "/grids/"),
     ("list_grids", {}, "GET", "/grids/"),
     ("get_grid", {"grid_id": G}, "GET", f"/grids/{G}"),
+    ("analyze_grid", {"grid_id": G}, "POST", f"/grids/{G}/analyze"),
+    ("grid_suggestions", {"grid_id": G}, "GET", f"/grids/{G}/suggestions"),
+    ("refine_grid", {"grid_id": G, "kind": "zoom_in"}, "POST", f"/grids/{G}/refine"),
     ("archive_grid", {"grid_id": G}, "POST", f"/grids/{G}/archive"),
     # ---- Reference (public) ----
     ("list_indicator_types", {}, "GET", "/reference/indicators"),
@@ -244,12 +247,6 @@ CASES: list[tuple[str, dict, str, str]] = [
     ("get_committee", {"instance_id": I}, "GET", f"/agent/instances/{I}"),
     ("clone_template", {"body": {}}, "POST", "/agent/instances/from-template"),
     ("delete_committee", {"instance_id": I}, "DELETE", f"/agent/instances/{I}"),
-    (
-        "trigger_committee_run",
-        {"instance_id": I},
-        "POST",
-        f"/agent/instances/{I}/trigger",
-    ),
     (
         "get_committee_messages",
         {"instance_id": I},
@@ -290,10 +287,6 @@ CASES: list[tuple[str, dict, str, str]] = [
         f"/agent/instances/{I}/rollback",
     ),
     # ---- Agent: proposals ----
-    ("list_pending_proposals", {}, "GET", "/agent/proposals/pending"),
-    ("get_proposal", {"proposal_id": P}, "GET", f"/agent/proposals/{P}"),
-    ("approve_proposal", {"proposal_id": P}, "POST", f"/agent/proposals/{P}/approve"),
-    ("reject_proposal", {"proposal_id": P}, "POST", f"/agent/proposals/{P}/reject"),
     # ---- Agent: model routes ----
     ("list_model_routes", {}, "GET", "/agent/model-routes"),
     ("upsert_model_route", {"body": {}}, "POST", "/agent/model-routes"),

@@ -1,8 +1,8 @@
 # RiskManaged — LLM Agent Guide
 
 You are connected to the RiskManaged trading platform. You can research, build,
-backtest and optimise trading strategies, run LLM agent committees over them,
-and read the market context those committees use.
+backtest and optimise trading strategies, run LLM agent squads over them,
+and read the market context those squads use.
 
 Everything you touch belongs to the user whose API token you are holding. You
 never name a user id — the server resolves identity from the token.
@@ -26,10 +26,15 @@ never name a user id — the server resolves identity from the token.
   or neutral.
 - **Grid template / grid search** — a parameterised strategy, and the run that
   backtests every variation of it.
-- **Committee** — a group of LLM agents that deliberate over a strategy and
-  raise trade *proposals*. Its `autonomy_tier` decides what happens next:
-  `suggest` (you approve each one), `paper_track` (fills on paper to build a
-  record), `auto_live` (fills for real).
+- **Squad** — a group of LLM agents that deliberate over the markets it
+  covers, on its own cadence, and publish a **decision** for each: long,
+  short, hold, or one of the two risk-off states. It never trades. Each
+  decision is stamped with the market price and scored against the price at
+  the next one, which gives the squad a track record in points.
+  A strategy consumes a squad through the `CommitteeDecision` indicator
+  (lines `decision`, `confidence`, `committee_points`,
+  `last_decision_points`, `decision_age_minutes`) and decides for itself
+  whether to act.
 
 ## Indicator names and lines — read this before writing any condition
 
@@ -132,16 +137,19 @@ field's default refers to an indicator your strategy will not have.
 5. `get_grid` — poll until `completed`; per-variation metrics live under
    `variation["backtest"]` and are absent for untested variations
 
-## Workflow: agent committees
+## Workflow: agent squads
 
-1. `list_templates` → `clone_template` — bind a committee to a strategy
-2. `trigger_committee_run` — one deliberation cycle
+1. `list_templates` → `clone_template` — create a squad
+2. `set_committee_cadence` — how often it wakes (there is no manual trigger; a
+   squad deliberates on its cadence only)
 3. `get_committee_messages` — read the deliberation
-4. `list_pending_proposals` → `approve_proposal` / `reject_proposal`
-5. `get_committee_track_record`, `get_committee_promotion_status` — is it ready
-   for a higher autonomy tier?
 
-Committees cost LLM tokens. `get_user_settings` shows the daily cap and today's
+A squad does not trade. It publishes a decision per market it covers, on
+its own cadence, and is scored on what the market did next. Strategies consume
+that decision through the `CommitteeDecision` indicator and decide for
+themselves whether to act on it.
+
+Squads cost LLM tokens. `get_user_settings` shows the daily cap and today's
 spend; `set_daily_token_cap` changes it.
 
 ## News-driven strategies

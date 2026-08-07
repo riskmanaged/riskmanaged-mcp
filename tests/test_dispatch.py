@@ -74,15 +74,6 @@ class TestArgumentTranslation:
         _, kwargs = fake_client.get_committee_promotion_events.call_args
         assert kwargs["limit"] > 0
 
-    def test_reject_proposal_forwards_the_reason(self, fake_client):
-        mcp_server._dispatch(
-            fake_client,
-            "reject_proposal",
-            {"proposal_id": "P1", "reason": "too risky"},
-        )
-        args, _ = fake_client.reject_proposal.call_args
-        assert args[0] == "P1"
-        assert args[1]["reason"] == "too risky"
 
     def test_unknown_tool_raises(self, fake_client):
         with pytest.raises(ValueError, match="Unknown tool"):

@@ -93,7 +93,7 @@ https://github.com/riskmanaged/riskmanaged-mcp`, or drop this repo into your
 ## Available tools
 
 <!-- BEGIN GENERATED TOOLS -->
-_71 tools. This table is generated — run `riskmanaged dev sync-docs` after changing them._
+_72 tools. This table is generated — run `riskmanaged dev sync-docs` after changing them._
 
 | Category | Tools |
 |---|---|
@@ -106,12 +106,12 @@ _71 tools. This table is generated — run `riskmanaged dev sync-docs` after cha
 | **Risk** | `set_stop_loss`, `set_take_profit` |
 | **Backtest** | `run_backtest`, `get_reports`, `get_backtest_results`, `run_monte_carlo` |
 | **Versioning** | `commit_version`, `get_versions`, `list_versions`, `restore_version` |
-| **Grids** | `create_grid_template`, `update_grid_template`, `check_variations`, `create_grid`, `get_grid` |
+| **Grids** | `create_grid_template`, `update_grid_template`, `check_variations`, `create_grid`, `get_grid`, `analyze_grid`, `get_grid_suggestions`, `refine_grid` |
 | **Community** | `share_strategy` |
-| **Committee templates** | `list_templates`, `get_template` |
-| **Committees** | `list_committees`, `get_committee`, `clone_template`, `trigger_committee_run`, `get_committee_messages`, `get_committee_track_record`, `set_committee_tier`, `list_instance_runs` |
-| **Promotion** | `get_committee_promotion_status`, `get_committee_promotion_events`, `list_rollback_candidates`, `rollback_instance` |
-| **Proposals** | `list_pending_proposals`, `get_proposal`, `approve_proposal`, `reject_proposal` |
+| **Squad templates** | `list_templates`, `get_template` |
+| **Squads** | `list_committees`, `get_committee`, `clone_template`, `get_committee_messages`, `list_instance_runs` |
+| **Squad cadence + markets** | `set_committee_cadence`, `list_committee_markets`, `add_committee_market`, `remove_committee_market`, `get_committee_readings`, `set_committee_readings` |
+| **Squad decisions** | `get_committee_decision_board`, `list_committee_decisions`, `get_committee_decision_summary` |
 | **Model routes** | `list_model_routes`, `upsert_model_route`, `delete_model_route` |
 | **LLM connections** | `list_llm_connections`, `create_llm_connection`, `test_llm_connection`, `reveal_llm_connection_key`, `update_llm_connection`, `delete_llm_connection` |
 | **News** | `list_news_articles`, `get_news_article`, `list_news_sources` |
@@ -242,10 +242,15 @@ under `variation["backtest"]` and are absent for untested variations.
 ```bash
 riskmanaged agents templates list
 riskmanaged agents committees clone --template-slug macro-fund --name "My Fund" --strategy-id $SID
-riskmanaged agents committees trigger $IID
-riskmanaged agents proposals list
-riskmanaged agents proposals approve $PID
+riskmanaged agents committees add-market $IID BTCUSDT
+riskmanaged agents committees cadence $IID --interval-seconds 1800
+riskmanaged agents committees decisions $IID
 ```
+
+There is no manual trigger: a committee deliberates on its cadence and nothing
+else. An off-cadence run can be priced off the same bar as the previous
+decision, and two decisions priced off one bar have a zero delta — which scored
+a directional call as a loss. To make one run sooner, lower its cadence.
 
 Committees spend LLM tokens. `riskmanaged agents spend get` shows the daily cap
 and today's usage.

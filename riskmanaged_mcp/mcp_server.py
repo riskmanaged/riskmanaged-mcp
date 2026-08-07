@@ -370,11 +370,68 @@ TOOLS = [
     ),
     Tool(
         name="get_grid",
-        description="Get grid search results including all variation metrics",
+        description=(
+            "Get grid search results: the robustness verdict (robust_plateau / "
+            "weak_plateau / isolated_peaks / no_survivors), the ranked parameter "
+            "plateaus (each with its width, member settings and a recommended pick) "
+            "under cluster_analysis, plus every variation's metrics"
+        ),
         inputSchema={
             "type": "object",
             "properties": {"grid_id": {"type": "string"}},
             "required": ["grid_id"],
+        },
+    ),
+    Tool(
+        name="analyze_grid",
+        description=(
+            "(Re)compute the robustness/cluster analysis for a completed grid. "
+            "Needed to backfill grids finished before analysis existed; new grids "
+            "are analysed automatically"
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {"grid_id": {"type": "string"}},
+            "required": ["grid_id"],
+        },
+    ),
+    Tool(
+        name="get_grid_suggestions",
+        description=(
+            "Get proposed next searches for a grid: zoom_in (finer step inside a "
+            "found plateau) and explore_higher/explore_lower (a fresh parameter set "
+            "that excludes the already-tested ranges). Each includes a ready-to-run "
+            "template_data and an estimated variation count"
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {"grid_id": {"type": "string"}},
+            "required": ["grid_id"],
+        },
+    ),
+    Tool(
+        name="refine_grid",
+        description=(
+            "Turn a chosen next-search into a new grid template and return its "
+            "template_id (then call create_grid to launch it). Use kind=zoom_in to "
+            "refine a plateau, or kind=explore_higher/explore_lower to iterate on a "
+            "separate parameter set. Pass the suggestion's template_data to run it "
+            "exactly, or a custom template_data for a fully bespoke sweep"
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "grid_id": {"type": "string"},
+                "kind": {
+                    "type": "string",
+                    "description": "zoom_in | explore_higher | explore_lower",
+                },
+                "template_data": {
+                    "type": "object",
+                    "description": "Optional exact search to persist (from a suggestion, or custom)",
+                },
+            },
+            "required": ["grid_id", "kind"],
         },
     ),
     # ================================================================
@@ -496,7 +553,7 @@ TOOLS = [
     # ---- Agent committees (W6.1) ----
     Tool(
         name="list_committees",
-        description="List your agent committees (returns instance_id, name, autonomy_tier, strategy binding)",
+        description="List your Squads (returns instance_id, name, autonomy_tier, strategy binding)",
         inputSchema={
             "type": "object",
             "properties": {"enabled_only": {"type": "boolean", "default": True}},
@@ -504,7 +561,7 @@ TOOLS = [
     ),
     Tool(
         name="get_committee",
-        description="Get one committee (AgentInstance) by id, with its members + thresholds",
+        description="Get one squad (AgentInstance) by id, with its members + thresholds",
         inputSchema={
             "type": "object",
             "properties": {"instance_id": {"type": "string"}},
@@ -513,7 +570,7 @@ TOOLS = [
     ),
     Tool(
         name="clone_template",
-        description="Clone a day-1 template into a working committee bound to a strategy. Returns the new instance_id.",
+        description="Clone a day-1 template into a working squad bound to a strategy. Returns the new instance_id.",
         inputSchema={
             "type": "object",
             "properties": {
@@ -528,20 +585,8 @@ TOOLS = [
         },
     ),
     Tool(
-        name="trigger_committee_run",
-        description="Run one deliberation cycle on a committee. Blocks until the run is in {awaiting_user, completed}.",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "instance_id": {"type": "string"},
-                "symbol": {"type": "string", "default": "BTCUSDT"},
-            },
-            "required": ["instance_id"],
-        },
-    ),
-    Tool(
         name="get_committee_messages",
-        description="Replay the deliberation message bus for a committee (since_id=0 returns the full transcript)",
+        description="Replay the deliberation message bus for a squad (since_id=0 returns the full transcript)",
         inputSchema={
             "type": "object",
             "properties": {
@@ -552,9 +597,14 @@ TOOLS = [
             "required": ["instance_id"],
         },
     ),
+    # ---- Committee cadence, markets, readings and decisions ----
     Tool(
-        name="get_committee_track_record",
-        description="Get the cheap track-record summary for a committee (total_trades, sharpe, win_rate, max_drawdown, eligible)",
+        name="get_committee_decision_board",
+        description=(
+            "One row per market a squad covers: its current call, "
+            "cumulative points, accuracy, streak and when it next wakes. The "
+            "fastest way to see what a squad is saying right now."
+        ),
         inputSchema={
             "type": "object",
             "properties": {"instance_id": {"type": "string"}},
@@ -562,16 +612,125 @@ TOOLS = [
         },
     ),
     Tool(
-        name="set_committee_tier",
-        description="Direct, non-gated tier flip on a committee (suggest|paper_track|auto_live). Bypasses evaluate_promotion.",
+        name="list_committee_decisions",
+        description=(
+            "A squad's recent decisions, newest first. Each carries the "
+            "price it was stamped with and, once the next decision supplied a "
+            "closing price, the points it scored. The newest decision is "
+            "always unscored."
+        ),
         inputSchema={
             "type": "object",
             "properties": {
                 "instance_id": {"type": "string"},
-                "to_tier": {"type": "string", "enum": ["suggest", "paper_track", "auto_live"]},
-                "reason": {"type": "string"},
+                "symbol": {"type": "string", "description": "Filter to one market"},
+                "limit": {"type": "integer", "default": 50},
             },
-            "required": ["instance_id", "to_tier"],
+            "required": ["instance_id"],
+        },
+    ),
+    Tool(
+        name="get_committee_decision_summary",
+        description=(
+            "A squad's standing: cumulative points, recent form, accuracy, "
+            "streak and current call. Positive points mean its calls have been "
+            "paying off."
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "instance_id": {"type": "string"},
+                "symbol": {"type": "string", "description": "Scope to one market"},
+            },
+            "required": ["instance_id"],
+        },
+    ),
+    Tool(
+        name="set_committee_cadence",
+        description=(
+            "Configure how a squad wakes. cadence_interval_seconds has a "
+            "30-minute floor and rounds to a timeframe (30m/1h/2h/4h/6h/12h/1d); "
+            "context_bars is how many trailing values of each reading the "
+            "specialists see."
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "instance_id": {"type": "string"},
+                "cadence_enabled": {"type": "boolean"},
+                "cadence_interval_seconds": {"type": "integer"},
+                "score_deadband_pct": {"type": "number"},
+                "context_bars": {"type": "integer"},
+            },
+            "required": ["instance_id"],
+        },
+    ),
+    Tool(
+        name="list_committee_markets",
+        description="The markets a squad covers, one decision each per wake",
+        inputSchema={
+            "type": "object",
+            "properties": {"instance_id": {"type": "string"}},
+            "required": ["instance_id"],
+        },
+    ),
+    Tool(
+        name="add_committee_market",
+        description=(
+            "Cover a market (e.g. BTCUSDT). Idempotent — re-adding re-enables "
+            "a paused market rather than duplicating it."
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "instance_id": {"type": "string"},
+                "symbol": {"type": "string"},
+            },
+            "required": ["instance_id", "symbol"],
+        },
+    ),
+    Tool(
+        name="remove_committee_market",
+        description="Stop covering a market. Its past decisions are kept.",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "instance_id": {"type": "string"},
+                "symbol": {"type": "string"},
+            },
+            "required": ["instance_id", "symbol"],
+        },
+    ),
+    Tool(
+        name="get_committee_readings",
+        description=(
+            "The indicator readings fed to a squad's specialists, in the "
+            "same {name: {type, config}} shape a strategy stores its "
+            "indicators in"
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {"instance_id": {"type": "string"}},
+            "required": ["instance_id"],
+        },
+    ),
+    Tool(
+        name="set_committee_readings",
+        description=(
+            "Replace a squad's whole reading map. Omit `ticker` from each "
+            "config — a reading is computed separately for every market the "
+            "squad covers."
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "instance_id": {"type": "string"},
+                "indicators": {
+                    "type": "object",
+                    "description": '{"rsi_1h": {"type": "RSI", "config": {"timeframe": "1h", "length": 14}}}',
+                },
+            },
+            "required": ["instance_id", "indicators"],
         },
     ),
     # ---- Model routes (W3.5) ----
@@ -739,74 +898,7 @@ TOOLS = [
             "required": ["cap"],
         },
     ),
-    # ---- Proposals + promotion (W4.3) ----
-    Tool(
-        name="list_pending_proposals",
-        description=(
-            "List trade proposals awaiting approval. Scoped to one committee "
-            "with instance_id, otherwise across all of your committees."
-        ),
-        inputSchema={
-            "type": "object",
-            "properties": {"instance_id": {"type": "string"}},
-        },
-    ),
-    Tool(
-        name="get_proposal",
-        description="Get one proposal by id (structured payload + side + symbol + confidence)",
-        inputSchema={
-            "type": "object",
-            "properties": {"proposal_id": {"type": "string"}},
-            "required": ["proposal_id"],
-        },
-    ),
-    Tool(
-        name="approve_proposal",
-        description="Approve a pending proposal (sends it to the executor for paper or live execution)",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "proposal_id": {"type": "string"},
-            },
-            "required": ["proposal_id"],
-        },
-    ),
-    Tool(
-        name="reject_proposal",
-        description="Reject a pending proposal with an optional reason",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "proposal_id": {"type": "string"},
-                "reason": {"type": "string"},
-            },
-            "required": ["proposal_id"],
-        },
-    ),
-    Tool(
-        name="get_committee_promotion_status",
-        description="Get the eligibility status of a committee for promotion to a given tier (default auto_live)",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "instance_id": {"type": "string"},
-                "to_tier": {"type": "string", "default": "auto_live"},
-            },
-            "required": ["instance_id"],
-        },
-    ),
-    Tool(
-        name="get_committee_promotion_events",
-        description="List recent promotion events for a committee (audit log: promote, demote, threshold_met, etc.)",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "instance_id": {"type": "string"},
-                "limit": {"type": "integer", "default": 5},
-            },
-            "required": ["instance_id"],
-        },
-    ),
+    # ---- Promotion ----
     # ---- W6.5 — Observability (per-instance + admin) ----
     Tool(
         name="list_instance_runs",
@@ -814,7 +906,7 @@ TOOLS = [
             "List the last N runs for an agent instance, with token "
             "counts and estimated cost. Open to the instance owner "
             "(no admin role required). Powers the 5th 'Runs' view-tab "
-            "on the committee detail page."
+            "on the squad detail page."
         ),
         inputSchema={
             "type": "object",
@@ -831,7 +923,7 @@ TOOLS = [
             "ADMIN-ONLY: per-user LLM spend for today UTC. Returns "
             "tokens_in, tokens_out, total_tokens, daily_token_cap, "
             "cap_pct, cap_pct_color (green/yellow/red), and the "
-            "number of active committees the user has. The backend "
+            "number of active squads the user has. The backend "
             "enforces the admin role; the MCP server forwards."
         ),
         inputSchema={
@@ -860,46 +952,6 @@ TOOLS = [
         },
     ),
     # ---- W6.5 — Rollback (tier flip via the audit log) ----
-    Tool(
-        name="list_rollback_candidates",
-        description=(
-            "List the last N promotion events for an instance with a "
-            "`can_rollback` flag. Only the most recent event has "
-            "`can_rollback=True` because rolling back to a non-most-"
-            "recent event would skip the events after it, breaking "
-            "the audit log. Open to the instance owner (no admin "
-            "role required)."
-        ),
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "instance_id": {"type": "string"},
-                "limit": {"type": "integer", "default": 20, "minimum": 1, "maximum": 100},
-            },
-            "required": ["instance_id"],
-        },
-    ),
-    Tool(
-        name="rollback_instance",
-        description=(
-            "Roll an instance's `autonomy_tier` back to the value "
-            "it held before the named `event_id` was applied. Only "
-            "the most recent event is rollbackable. Writes a new "
-            "AgentPromotionEvent with `trigger='rollback'`. Returns "
-            "`{instance_id, event_id, rolled_back_from, "
-            "rolled_back_to, new_event_id}`. Errors with "
-            "`error_code: not_most_recent_event` if the named event "
-            "isn't the most recent."
-        ),
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "instance_id": {"type": "string"},
-                "event_id": {"type": "string"},
-            },
-            "required": ["instance_id", "event_id"],
-        },
-    ),
 ]
 
 
@@ -1037,6 +1089,14 @@ def _dispatch(client: RiskManagedClient, name: str, args: dict):
         return client.create_grid(args["template_id"])
     if name == "get_grid":
         return client.get_grid(args["grid_id"])
+    if name == "analyze_grid":
+        return client.analyze_grid(args["grid_id"])
+    if name == "get_grid_suggestions":
+        return client.grid_suggestions(args["grid_id"])
+    if name == "refine_grid":
+        return client.refine_grid(
+            args["grid_id"], args["kind"], args.get("template_data")
+        )
     # ---- Docs-gap tool dispatch (W6.4-B) ----
     if name == "update_strategy":
         return client.update_strategy(
@@ -1080,25 +1140,39 @@ def _dispatch(client: RiskManagedClient, name: str, args: dict):
         return client.get_committee(args["instance_id"])
     if name == "clone_template":
         return client.clone_template(args)
-    if name == "trigger_committee_run":
-        return client.trigger_committee_run(
-            args["instance_id"],
-            {"symbol": args.get("symbol", "BTCUSDT")},
-        )
     if name == "get_committee_messages":
         return client.get_committee_messages(
             args["instance_id"],
             since_id=args.get("since_id", 0),
             limit=args.get("limit", 200),
         )
-    if name == "get_committee_track_record":
-        return client.get_committee_track_record(args["instance_id"])
-    if name == "set_committee_tier":
-        return client.set_committee_tier(
-            args["instance_id"],
-            {"to_tier": args["to_tier"], "reason": args.get("reason")},
-        )
     # Model routes
+    # Committee cadence, markets, readings and decisions
+    if name == "get_committee_decision_board":
+        return client.get_committee_cadence_board(args["instance_id"])
+    if name == "list_committee_decisions":
+        return client.list_committee_decisions(
+            args["instance_id"],
+            symbol=args.get("symbol", ""),
+            limit=args.get("limit", 50),
+        )
+    if name == "get_committee_decision_summary":
+        return client.get_committee_decision_summary(
+            args["instance_id"], symbol=args.get("symbol", "")
+        )
+    if name == "set_committee_cadence":
+        body = {k: v for k, v in args.items() if k != "instance_id"}
+        return client.set_committee_cadence(args["instance_id"], body)
+    if name == "list_committee_markets":
+        return client.list_committee_markets(args["instance_id"])
+    if name == "add_committee_market":
+        return client.add_committee_market(args["instance_id"], args["symbol"])
+    if name == "remove_committee_market":
+        return client.remove_committee_market(args["instance_id"], args["symbol"])
+    if name == "get_committee_readings":
+        return client.get_committee_readings(args["instance_id"])
+    if name == "set_committee_readings":
+        return client.set_committee_readings(args["instance_id"], args["indicators"])
     if name == "list_model_routes":
         return client.list_model_routes()
     if name == "upsert_model_route":
@@ -1140,25 +1214,6 @@ def _dispatch(client: RiskManagedClient, name: str, args: dict):
         return client.get_user_settings()
     if name == "set_daily_token_cap":
         return client.set_daily_token_cap(args.get("cap"))
-    # Proposals
-    if name == "list_pending_proposals":
-        return client.list_pending_proposals(args.get("instance_id", ""))
-    if name == "get_proposal":
-        return client.get_proposal(args["proposal_id"])
-    if name == "approve_proposal":
-        return client.approve_proposal(args["proposal_id"])
-    if name == "reject_proposal":
-        return client.reject_proposal(
-            args["proposal_id"], {"reason": args.get("reason", "")}
-        )
-    if name == "get_committee_promotion_status":
-        return client.get_committee_promotion_status(
-            args["instance_id"], to_tier=args.get("to_tier", "auto_live")
-        )
-    if name == "get_committee_promotion_events":
-        return client.get_committee_promotion_events(
-            args["instance_id"], limit=args.get("limit", 5)
-        )
     # W6.5 — Observability
     if name == "list_instance_runs":
         return client.list_instance_runs(
@@ -1171,14 +1226,6 @@ def _dispatch(client: RiskManagedClient, name: str, args: dict):
             args["user_id"], days=args.get("days", 30)
         )
     # W6.5 — Rollback
-    if name == "list_rollback_candidates":
-        return client.list_rollback_candidates(
-            args["instance_id"], limit=args.get("limit", 20)
-        )
-    if name == "rollback_instance":
-        return client.rollback_instance(
-            args["instance_id"], args["event_id"]
-        )
 
     raise ValueError(f"Unknown tool: {name}")
 

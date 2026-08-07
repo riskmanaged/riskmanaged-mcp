@@ -96,6 +96,49 @@ def get_grid(grid_id: str = typer.Argument(help="Grid ID")):
     rprint(json.dumps(data, indent=2, default=str))
 
 
+@app.command("analyze")
+def analyze(grid_id: str = typer.Argument(help="Grid ID")):
+    """(Re)compute the robustness/cluster analysis for a grid (verdict + plateaus)."""
+    client = RiskManagedClient()
+    result = client.analyze_grid(grid_id)
+    rprint(json.dumps(result, indent=2, default=str))
+
+
+@app.command("suggest")
+def suggest(grid_id: str = typer.Argument(help="Grid ID")):
+    """Show proposed next searches (zoom-in on a plateau / explore a new parameter set)."""
+    client = RiskManagedClient()
+    suggestions = client.grid_suggestions(grid_id)
+    if not suggestions:
+        rprint("[dim]No suggestions for this grid.[/dim]")
+        return
+    table = Table(title="Next-search suggestions")
+    table.add_column("Kind", style="bold")
+    table.add_column("Title")
+    table.add_column("Est. variations", justify="right")
+    for s in suggestions:
+        table.add_row(s.get("kind", ""), s.get("title", ""), str(s.get("estimated_variations", "")))
+    rprint(table)
+    rprint("[dim]Run 'grid refine <grid_id> --kind <kind>' to set one up.[/dim]")
+
+
+@app.command("refine")
+def refine(
+    grid_id: str = typer.Argument(help="Grid ID"),
+    kind: str = typer.Option(..., help="zoom_in | explore_higher | explore_lower"),
+    template_data: str = typer.Option(
+        None, help="Optional JSON template_data to run an exact/custom search"
+    ),
+):
+    """Create a refined grid template (zoom-in or a new parameter set); prints its template_id."""
+    client = RiskManagedClient()
+    td = json.loads(template_data) if template_data else None
+    result = client.refine_grid(grid_id, kind, td)
+    tid = result.get("template_id")
+    rprint(f"[green]✓[/green] Refined template created: [bold]{tid}[/bold]")
+    rprint(f"[dim]Launch it with:[/dim] grid create {tid}")
+
+
 @app.command("archive")
 def archive(grid_id: str = typer.Argument(help="Grid ID")):
     """Archive all variations in a grid."""
